@@ -1,4 +1,4 @@
-# Eternal Life Tabernacle - Church Website
+# Evening Light Tabernacle - Church Website
 
 A beautiful, modern, and responsive website for Eternal Life Tabernacle, featuring a clean design with blue, white, and golden yellow theme colors.
 
