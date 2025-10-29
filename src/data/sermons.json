@@ -1,0 +1,58 @@
+{
+  "sermons": [
+    {
+      "id": 1,
+      "title": "Walking in Faith: A Journey of Trust",
+      "date": "2025-10-27",
+      "pastor": "Pastor Michael Thompson",
+      "description": "Pastor Michael delivers a powerful message about trusting God's plan even in uncertain times. Learn how faith can transform your perspective and strengthen your walk with Christ.",
+      "videoUrl": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      "scripture": "Hebrews 11:1-6"
+    },
+    {
+      "id": 2,
+      "title": "The Power of Prayer",
+      "date": "2025-10-20",
+      "pastor": "Pastor Sarah Johnson",
+      "description": "Discover the transformative power of prayer in your daily life. Pastor Sarah explores biblical principles that will deepen your prayer life and strengthen your relationship with God.",
+      "videoUrl": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      "scripture": "Matthew 6:5-15"
+    },
+    {
+      "id": 3,
+      "title": "Love Your Neighbor",
+      "date": "2025-10-13",
+      "pastor": "Pastor Michael Thompson",
+      "description": "Jesus commanded us to love our neighbors as ourselves. This message explores practical ways to show Christ's love in our community and make a real difference in people's lives.",
+      "videoUrl": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      "scripture": "Luke 10:25-37"
+    },
+    {
+      "id": 4,
+      "title": "Finding Hope in Difficult Times",
+      "date": "2025-10-06",
+      "pastor": "Pastor Michael Thompson",
+      "description": "When life gets tough, where do we turn? Pastor Michael shares encouraging words about finding hope and strength through God's promises during life's most challenging seasons.",
+      "videoUrl": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      "scripture": "Romans 15:13"
+    },
+    {
+      "id": 5,
+      "title": "The Grace of God",
+      "date": "2025-09-29",
+      "pastor": "Pastor Sarah Johnson",
+      "description": "Understanding God's grace changes everything. This sermon explores the depth of God's unmerited favor and how it should impact our daily lives and relationships with others.",
+      "videoUrl": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      "scripture": "Ephesians 2:8-9"
+    },
+    {
+      "id": 6,
+      "title": "Building on a Strong Foundation",
+      "date": "2025-09-22",
+      "pastor": "Pastor Michael Thompson",
+      "description": "Jesus taught about building your house on the rock. Learn what it means to establish your life on a firm foundation of faith that will stand through any storm.",
+      "videoUrl": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      "scripture": "Matthew 7:24-27"
+    }
+  ]
+}

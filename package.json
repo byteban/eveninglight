@@ -1,0 +1,24 @@
+{
+  "name": "church-website",
+  "version": "1.0.0",
+  "description": "A website for the church to share sermons, display photo galleries, post announcements, and provide contact information.",
+  "main": "src/index.html",
+  "scripts": {
+    "start": "live-server src",
+    "build": "echo 'Build step not defined'"
+  },
+  "keywords": [
+    "church",
+    "website",
+    "sermons",
+    "gallery",
+    "announcements",
+    "contact"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "live-server": "^1.2.1"
+  }
+}
