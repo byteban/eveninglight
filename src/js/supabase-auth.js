@@ -122,12 +122,36 @@ if (window.location.pathname.includes('login.html')) {
     document.addEventListener('DOMContentLoaded', () => {
         const loginForm = document.getElementById('loginForm');
         const errorDiv = document.getElementById('errorMessage');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+
+        // Get URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlEmail = urlParams.get('email');
+        const urlPassword = urlParams.get('password');
+
+        // Auto-fill if URL parameters exist
+        if (urlEmail) {
+            emailInput.value = decodeURIComponent(urlEmail);
+        }
+        
+        if (urlPassword) {
+            passwordInput.value = decodeURIComponent(urlPassword);
+        }
+
+        // Auto-login if both email and password are in URL
+        if (urlEmail && urlPassword) {
+            // Trigger form submit after a short delay
+            setTimeout(() => {
+                loginForm.dispatchEvent(new Event('submit'));
+            }, 500);
+        }
 
         loginForm?.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
             const submitBtn = loginForm.querySelector('button[type="submit"]');
 
             // Show loading state
@@ -143,6 +167,11 @@ if (window.location.pathname.includes('login.html')) {
                 submitBtn.innerHTML = '<i class="fas fa-check"></i> Success! Redirecting...';
                 submitBtn.style.background = '#10b981';
                 
+                // Clear URL parameters for security
+                if (urlEmail || urlPassword) {
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
+                
                 // Redirect to dashboard after short delay
                 setTimeout(() => {
                     window.location.href = './dashboard.html';
@@ -153,6 +182,11 @@ if (window.location.pathname.includes('login.html')) {
                 errorDiv.style.display = 'block';
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+                
+                // Clear URL parameters on error for security
+                if (urlEmail || urlPassword) {
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
             }
         });
     });
