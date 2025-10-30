@@ -91,10 +91,9 @@ document.addEventListener('DOMContentLoaded', function() {
 	loadComponent('header', headerPath);
 	loadComponent('footer', footerPath);
 	
-	// Initialize navbar after components load
+	// Initialize other features after a slight delay to ensure components are loaded
 	setTimeout(function() {
-		console.log('Initializing navigation and animations...');
-		initializeNavbar();
+		console.log('Initializing announcements and animations...');
 		initializeAnnouncements();
 		initializeHeroTextRotation();
 		initPageAnimations(); // Initialize animations
@@ -373,6 +372,9 @@ function loadComponent(id, url) {
 				// Fix logo paths after loading components
 				if (id === 'header') {
 					fixLogoPath();
+					// Initialize navbar immediately after header is loaded
+					console.log('Header loaded, initializing navbar...');
+					initializeNavbar();
 				}
 				if (id === 'footer') {
 					fixFooterLogoPath();
@@ -418,20 +420,39 @@ function fixFooterLogoPath() {
 
 // Initialize simple navbar functionality
 function initializeNavbar() {
+	console.log('Initializing navbar...');
 	const navToggle = document.getElementById('navToggle');
 	const navLinks = document.getElementById('navLinks');
 	const navOverlay = document.getElementById('navOverlay');
 	const navLogo = document.querySelector('.nav-logo');
 	
+	// Check if elements exist
+	if (!navToggle || !navLinks) {
+		console.warn('Navbar elements not found, will retry...');
+		return;
+	}
+	
+	console.log('Navbar elements found:', { navToggle, navLinks, navOverlay });
+	
+	// Remove existing listeners to prevent duplicates
+	const newNavToggle = navToggle.cloneNode(true);
+	navToggle.parentNode.replaceChild(newNavToggle, navToggle);
+	
 	// Mobile menu toggle
-	if (navToggle && navLinks) {
+	if (newNavToggle && navLinks) {
 		// Toggle open/close
-		navToggle.addEventListener('click', function() {
+		newNavToggle.addEventListener('click', function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			console.log('Nav toggle clicked!');
+			
 			const isOpen = navLinks.classList.toggle('open');
-			navToggle.classList.toggle('active');
+			newNavToggle.classList.toggle('active');
 			document.body.classList.toggle('no-scroll', isOpen);
-			navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+			newNavToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
 			if (navOverlay) navOverlay.classList.toggle('visible', isOpen);
+
+			console.log('Menu is now:', isOpen ? 'OPEN' : 'CLOSED');
 
 			if (isOpen) {
 				const firstLink = navLinks.querySelector('a');
@@ -442,22 +463,26 @@ function initializeNavbar() {
 		// Close on overlay click
 		if (navOverlay) {
 			navOverlay.addEventListener('click', () => {
+				console.log('Overlay clicked, closing menu');
 				navLinks.classList.remove('open');
-				navToggle.classList.remove('active');
+				newNavToggle.classList.remove('active');
 				document.body.classList.remove('no-scroll');
-				navToggle.setAttribute('aria-expanded', 'false');
+				newNavToggle.setAttribute('aria-expanded', 'false');
 				navOverlay.classList.remove('visible');
 			});
 		}
 
 		// Close mobile menu when clicking outside (fallback)
 		document.addEventListener('click', function(e) {
-			if (!navToggle.contains(e.target) && !navLinks.contains(e.target) && !navOverlay?.contains(e.target)) {
-				navLinks.classList.remove('open');
-				navToggle.classList.remove('active');
-				document.body.classList.remove('no-scroll');
-				navToggle.setAttribute('aria-expanded', 'false');
-				if (navOverlay) navOverlay.classList.remove('visible');
+			if (!newNavToggle.contains(e.target) && !navLinks.contains(e.target) && !navOverlay?.contains(e.target)) {
+				if (navLinks.classList.contains('open')) {
+					console.log('Clicked outside, closing menu');
+					navLinks.classList.remove('open');
+					newNavToggle.classList.remove('active');
+					document.body.classList.remove('no-scroll');
+					newNavToggle.setAttribute('aria-expanded', 'false');
+					if (navOverlay) navOverlay.classList.remove('visible');
+				}
 			}
 		});
 
@@ -465,12 +490,13 @@ function initializeNavbar() {
 		document.addEventListener('keydown', (e) => {
 			if (e.key === 'Escape') {
 				if (navLinks.classList.contains('open')) {
+					console.log('Escape key pressed, closing menu');
 					navLinks.classList.remove('open');
-					navToggle.classList.remove('active');
+					newNavToggle.classList.remove('active');
 					document.body.classList.remove('no-scroll');
-					navToggle.setAttribute('aria-expanded', 'false');
+					newNavToggle.setAttribute('aria-expanded', 'false');
 					if (navOverlay) navOverlay.classList.remove('visible');
-					navToggle.focus();
+					newNavToggle.focus();
 				}
 			}
 		});
@@ -488,6 +514,8 @@ function initializeNavbar() {
 	
 	// Set active nav item
 	setActiveNavItem();
+	
+	console.log('Navbar initialization complete!');
 }
 
 // Setup smart navigation for all nav links

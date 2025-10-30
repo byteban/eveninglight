@@ -3,47 +3,70 @@ import { supabase } from './supabase-config.js';
 
 // Helper function to get the correct base path for GitHub Pages
 function getBasePath() {
-    // Check if we're on GitHub Pages
     const hostname = window.location.hostname;
     const pathname = window.location.pathname;
+    
+    console.log('getBasePath - hostname:', hostname, 'pathname:', pathname);
     
     if (hostname.includes('github.io')) {
         // Extract repo name from path (e.g., /eveninglight/)
         const match = pathname.match(/^\/([^\/]+)\//);
         if (match) {
-            return `/${match[1]}/admin`;
+            const basePath = `/${match[1]}/admin`;
+            console.log('GitHub Pages detected, base path:', basePath);
+            return basePath;
         }
     }
     
     // Check if we're in the admin folder already
     if (pathname.includes('/admin/')) {
-        return pathname.substring(0, pathname.indexOf('/admin/') + 6);
+        const basePath = pathname.substring(0, pathname.indexOf('/admin/') + 6);
+        console.log('Admin folder detected, base path:', basePath);
+        return basePath;
     }
     
-    // Default to relative path
+    // Default to relative path for local development
+    console.log('Using relative path');
     return './';
 }
 
 // Helper function to build admin URL
 function getAdminUrl(page) {
     const basePath = getBasePath();
+    let url;
+    
     if (basePath.startsWith('/')) {
-        // Absolute path for GitHub Pages
-        return `${basePath}${page}`;
+        // Absolute path for GitHub Pages - ensure no double slashes
+        const cleanPage = page.startsWith('/') ? page.substring(1) : page;
+        url = `${basePath}/${cleanPage}`;
+    } else if (basePath === './') {
+        // Relative path for local - just prepend ./
+        url = `./${page}`;
+    } else {
+        // Other cases
+        url = `${basePath}/${page}`;
     }
-    // Relative path for local
-    return `./${page}`;
+    
+    console.log('getAdminUrl for', page, ':', url);
+    return url;
 }
 
 // Login function
 export async function login(email, password) {
+    console.log('Attempting login for email:', email);
     try {
         const { data, error } = await supabase.auth.signInWithPassword({
             email: email,
             password: password
         });
 
-        if (error) throw error;
+        if (error) {
+            console.error('Supabase auth error:', error);
+            throw error;
+        }
+
+        console.log('Login successful! User:', data.user?.email);
+        console.log('Session established:', !!data.session);
 
         return {
             success: true,
@@ -83,8 +106,10 @@ export async function logout() {
         localStorage.removeItem('supabase.auth.token');
         sessionStorage.clear();
 
-        // Redirect to login page - use relative path
-        window.location.href = './login.html';
+        // Redirect to login page - use proper path helper
+        const loginUrl = getAdminUrl('login.html');
+        console.log('Logging out, redirecting to:', loginUrl);
+        window.location.href = loginUrl;
         return { success: true };
     } catch (error) {
         console.error('Logout error:', error);
@@ -141,7 +166,9 @@ export async function protectAdminPage() {
     const authStatus = await checkAuth();
     
     if (!authStatus.authenticated) {
-        window.location.href = './login.html';
+        const loginUrl = getAdminUrl('login.html');
+        console.log('User not authenticated, redirecting to:', loginUrl);
+        window.location.href = loginUrl;
         return false;
     }
     
@@ -150,10 +177,12 @@ export async function protectAdminPage() {
 
 // Initialize auth for login page
 if (window.location.pathname.includes('login.html')) {
+    console.log('Login page detected, checking existing auth...');
     // Check if user is already logged in
     checkAuth().then(authStatus => {
         if (authStatus.authenticated) {
-            window.location.href = './dashboard.html';
+            console.log('User already authenticated, redirecting to dashboard...');
+            window.location.href = getAdminUrl('dashboard.html');
         }
     });
     
@@ -204,7 +233,9 @@ if (window.location.pathname.includes('login.html')) {
                     
                     // Wait longer on mobile before redirecting
                     setTimeout(() => {
-                        window.location.href = './dashboard.html';
+                        const redirectUrl = getAdminUrl('dashboard.html');
+                        console.log('Auto-login successful, redirecting to:', redirectUrl);
+                        window.location.href = redirectUrl;
                     }, isMobile ? 1000 : 500);
                 } else {
                     errorDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + (result.error || 'Login failed. Please try again.');
@@ -246,9 +277,11 @@ if (window.location.pathname.includes('login.html')) {
                 // Detect mobile and wait longer before redirect
                 const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
                 
-                // Redirect to dashboard after delay - use relative path from login.html
+                // Redirect to dashboard after delay - use proper path helper
                 setTimeout(() => {
-                    window.location.href = './dashboard.html';
+                    const redirectUrl = getAdminUrl('dashboard.html');
+                    console.log('Login successful, redirecting to:', redirectUrl);
+                    window.location.href = redirectUrl;
                 }, isMobile ? 1000 : 500);
             } else {
                 // Show error with icon
