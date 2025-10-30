@@ -4,6 +4,87 @@ html {
 }
 
 /* ============================================
+   LOADING SCREEN
+   ============================================ */
+
+.loading-screen {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(135deg, #1e3a8a 0%, #0c1e47 100%);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 99999;
+	transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.loading-screen.hidden {
+	opacity: 0;
+	visibility: hidden;
+}
+
+.loading-content {
+	text-align: center;
+	animation: fadeIn 0.5s ease-in;
+}
+
+.loading-logo {
+	width: 120px;
+	height: auto;
+	margin-bottom: 2rem;
+	animation: pulse 2s ease-in-out infinite;
+}
+
+.loading-dots {
+	display: flex;
+	gap: 12px;
+	justify-content: center;
+	align-items: center;
+}
+
+.loading-dots .dot {
+	width: 12px;
+	height: 12px;
+	background: #f6b21a;
+	border-radius: 50%;
+	animation: dotPulse 1.4s infinite ease-in-out both;
+}
+
+.loading-dots .dot:nth-child(1) {
+	animation-delay: -0.32s;
+}
+
+.loading-dots .dot:nth-child(2) {
+	animation-delay: -0.16s;
+}
+
+.loading-dots .dot:nth-child(3) {
+	animation-delay: 0s;
+}
+
+.loading-dots .dot:nth-child(4) {
+	animation-delay: 0.16s;
+}
+
+.loading-dots .dot:nth-child(5) {
+	animation-delay: 0.32s;
+}
+
+@keyframes dotPulse {
+	0%, 80%, 100% {
+		transform: scale(0.6);
+		opacity: 0.5;
+	}
+	40% {
+		transform: scale(1);
+		opacity: 1;
+	}
+}
+
+/* ============================================
    ANIMATIONS & KEYFRAMES
    ============================================ */
 
@@ -1146,55 +1227,11 @@ section h2::after {
 	margin: 0 auto 3rem;
 }
 
-/* Home Page Gallery - Horizontal Auto-Scroll */
-body:not(:has(.gallery-categories)) .gallery-preview .gallery-grid {
-	display: flex;
+/* Home Page Gallery - Simple class-based approach */
+.gallery-grid.home-gallery {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
 	gap: 1.5rem;
-	overflow: hidden;
-	position: relative;
-}
-
-body:not(:has(.gallery-categories)) .gallery-preview .gallery-grid::before {
-	content: '';
-	position: absolute;
-	left: 0;
-	top: 0;
-	bottom: 0;
-	width: 50px;
-	background: linear-gradient(to right, var(--bg-light), transparent);
-	z-index: 2;
-	pointer-events: none;
-}
-
-body:not(:has(.gallery-categories)) .gallery-preview .gallery-grid::after {
-	content: '';
-	position: absolute;
-	right: 0;
-	top: 0;
-	bottom: 0;
-	width: 50px;
-	background: linear-gradient(to left, var(--bg-light), transparent);
-	z-index: 2;
-	pointer-events: none;
-}
-
-.gallery-grid-scroll {
-	display: flex;
-	gap: 1.5rem;
-	animation: scrollGallery 30s linear infinite;
-}
-
-.gallery-grid-scroll:hover {
-	animation-play-state: paused;
-}
-
-@keyframes scrollGallery {
-	0% {
-		transform: translateX(0);
-	}
-	100% {
-		transform: translateX(calc(-50%));
-	}
 }
 
 /* Gallery Items */
@@ -1205,6 +1242,8 @@ body:not(:has(.gallery-categories)) .gallery-preview .gallery-grid::after {
 	box-shadow: var(--shadow-sm);
 	transition: all 0.4s ease;
 	cursor: pointer;
+	width: 100%;
+	aspect-ratio: 1;
 }
 
 .gallery-item:hover {
@@ -1227,19 +1266,6 @@ body:not(:has(.gallery-categories)) .gallery-preview .gallery-grid::after {
 
 .gallery-item:hover::before {
 	opacity: 1;
-}
-
-/* Gallery items in grid (gallery page) */
-.gallery-grid > .gallery-item {
-	width: 100%;
-	aspect-ratio: 1;
-}
-
-/* Gallery items in scroll (home page) */
-.gallery-grid-scroll .gallery-item {
-	width: 280px;
-	height: 280px;
-	flex-shrink: 0;
 }
 
 .gallery-item img {
@@ -1269,35 +1295,6 @@ body:not(:has(.gallery-categories)) .gallery-preview .gallery-grid::after {
 	display: block;
 	margin: 0 auto;
 	max-width: 300px;
-}
-
-/* Mobile Gallery Scroll Styles */
-@media (max-width: 768px) {
-	/* Hide scrollbar but keep functionality */
-	body:not(:has(.gallery-categories)) .gallery-preview .gallery-grid::-webkit-scrollbar {
-		display: none;
-	}
-	
-	body:not(:has(.gallery-categories)) .gallery-preview .gallery-grid {
-		-ms-overflow-style: none;
-		scrollbar-width: none;
-	}
-	
-	/* Add scroll indicator hint */
-	.gallery-preview {
-		position: relative;
-	}
-	
-	.gallery-preview::after {
-		content: '← Swipe →';
-		display: block;
-		text-align: center;
-		font-size: 0.85rem;
-		color: var(--text-light);
-		margin-top: -2rem;
-		margin-bottom: 2rem;
-		opacity: 0.7;
-	}
 }
 
 /* About Section */
@@ -1598,7 +1595,7 @@ footer {
 	}
 	
 	/* Home Page Gallery - Horizontal Scroll on Mobile */
-	body:not(:has(.gallery-categories)) .gallery-preview .gallery-grid {
+	.gallery-grid.home-gallery {
 		display: flex;
 		overflow-x: auto;
 		overflow-y: hidden;
@@ -1608,24 +1605,37 @@ footer {
 		gap: 1rem;
 		padding: 0 1rem;
 		margin: 0 -1rem 3rem;
+		/* Hide scrollbar */
+		scrollbar-width: none;
+		-ms-overflow-style: none;
 	}
 	
-	body:not(:has(.gallery-categories)) .gallery-preview .gallery-item {
+	.gallery-grid.home-gallery::-webkit-scrollbar {
+		display: none;
+	}
+	
+	.gallery-grid.home-gallery .gallery-item {
 		flex: 0 0 85%;
 		width: 85%;
 		height: 280px;
 		scroll-snap-align: center;
+		aspect-ratio: unset;
 	}
 	
-	/* Hide gradient overlays on mobile */
-	body:not(:has(.gallery-categories)) .gallery-preview .gallery-grid::before,
-	body:not(:has(.gallery-categories)) .gallery-preview .gallery-grid::after {
-		display: none;
+	/* Add swipe indicator */
+	.gallery-preview {
+		position: relative;
 	}
 	
-	/* Disable auto-scroll animation on mobile */
-	.gallery-grid-scroll {
-		animation: none;
+	.gallery-preview::after {
+		content: '← Swipe →';
+		display: block;
+		text-align: center;
+		font-size: 0.85rem;
+		color: var(--text-light);
+		margin-top: -2rem;
+		margin-bottom: 2rem;
+		opacity: 0.7;
 	}
 	
 	.contact-form {
@@ -1680,13 +1690,13 @@ footer {
 	}
 	
 	/* Gallery - One image per view on small mobile */
-	body:not(:has(.gallery-categories)) .gallery-preview .gallery-item {
+	.gallery-grid.home-gallery .gallery-item {
 		flex: 0 0 90%;
 		width: 90%;
 		height: 260px;
 	}
 	
-	body:not(:has(.gallery-categories)) .gallery-preview .gallery-grid {
+	.gallery-grid.home-gallery {
 		gap: 0.8rem;
 		padding: 0 0.5rem;
 		margin: 0 -0.5rem 3rem;

@@ -3,6 +3,23 @@ import { supabase, formatDate, getYouTubeEmbedUrl } from './supabase-config.js';
 import { getActiveAnnouncement, getGalleryPhotos } from './supabase-data.js';
 
 // ============================================
+// LOADING SCREEN
+// ============================================
+
+function hideLoadingScreen() {
+	const loadingScreen = document.getElementById('loading-screen');
+	if (loadingScreen) {
+		setTimeout(() => {
+			loadingScreen.classList.add('hidden');
+			// Remove from DOM after transition
+			setTimeout(() => {
+				loadingScreen.remove();
+			}, 500);
+		}, 800); // Show loading for at least 800ms
+	}
+}
+
+// ============================================
 // SCROLL REVEAL ANIMATIONS
 // ============================================
 
@@ -81,6 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		initializeAnnouncements();
 		initializeHeroTextRotation();
 		initPageAnimations(); // Initialize animations
+		hideLoadingScreen(); // Hide loading screen after everything is loaded
 		
 		// Load dynamic content based on page
 		if (currentPath.includes('sermons.html') || currentPath.includes('/sermons')) {
