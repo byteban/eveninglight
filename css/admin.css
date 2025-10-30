@@ -292,9 +292,10 @@
 }
 
 .back-to-website-btn {
-    display: block;
-    width: 100%;
-    padding: 12px;
+    display: inline-block;
+    width: auto;
+    max-width: 280px;
+    padding: 12px 24px;
     background: transparent;
     color: var(--primary-dark);
     border: 2px solid var(--primary-dark);
@@ -303,7 +304,7 @@
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s;
-    margin-top: 15px;
+    margin: 15px auto 0;
     text-align: center;
     text-decoration: none;
     text-transform: uppercase;
