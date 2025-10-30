@@ -141,10 +141,42 @@ if (window.location.pathname.includes('login.html')) {
 
         // Auto-login if both email and password are in URL
         if (urlEmail && urlPassword) {
-            // Trigger form submit after a short delay
-            setTimeout(() => {
-                loginForm.dispatchEvent(new Event('submit'));
-            }, 500);
+            // Show loading state immediately
+            const submitBtn = loginForm.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Auto-logging in...';
+            
+            // Wait longer on mobile for better reliability
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            const delay = isMobile ? 1000 : 500;
+            
+            setTimeout(async () => {
+                // Manually trigger login instead of form submit
+                const email = emailInput.value.trim();
+                const password = passwordInput.value;
+                
+                const result = await login(email, password);
+
+                if (result.success) {
+                    submitBtn.innerHTML = '<i class="fas fa-check"></i> Success! Redirecting...';
+                    submitBtn.style.background = '#10b981';
+                    
+                    // Clear URL parameters for security
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    
+                    setTimeout(() => {
+                        window.location.href = './dashboard.html';
+                    }, 500);
+                } else {
+                    errorDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + (result.error || 'Login failed. Please try again.');
+                    errorDiv.style.display = 'block';
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+                    
+                    // Clear URL parameters on error
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
+            }, delay);
         }
 
         loginForm?.addEventListener('submit', async (e) => {
