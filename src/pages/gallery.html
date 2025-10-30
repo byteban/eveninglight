@@ -1,6 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery - Evening Light Tabernacle</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="icon" href="../assets/images/favicon.ico" type="image/x-icon">
+</head>
 <body>
-	<div id="header"></div>
-	<!-- Page content here -->
-	<div id="footer"></div>
-	<script src="../js/main.js"></script>
+    <!-- Header -->
+    <div id="header"></div>
+
+    <!-- Gallery Section -->
+    <section class="gallery-preview scroll-reveal" style="margin-top: 80px;">
+        <div class="container">
+            <h2 class="animate-on-load">PHOTO GALLERY</h2>
+            <!-- Dynamic gallery grid - will be populated by JavaScript -->
+            <div class="gallery-grid" id="galleryContainer">
+                <p style="grid-column: 1/-1; text-align: center; color: #666; padding: 20px;">Loading photos...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Categories -->
+    <section class="gallery-categories scroll-reveal">
+        <div class="container">
+            <h2 class="animate-on-load">EVENT CATEGORIES</h2>
+            <div class="announcement-list">
+                <div class="announcement-item animate-delay-1">
+                    <h3>Worship Services</h3>
+                    <p>Photos from our Sunday worship services and special celebrations throughout the year.</p>
+                </div>
+                <div class="announcement-item animate-delay-2">
+                    <h3>Community Events</h3>
+                    <p>Highlights from our community outreach programs and fellowship activities.</p>
+                </div>
+                <div class="announcement-item animate-delay-3">
+                    <h3>Youth & Children</h3>
+                    <p>Memorable moments from youth group meetings, VBS, and children's ministry events.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <div id="footer"></div>
+    <script src="../js/main.js" type="module"></script>
 </body>
+</html>

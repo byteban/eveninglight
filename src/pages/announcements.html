@@ -1,6 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Announcements - Evening Light Tabernacle</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="icon" href="../assets/images/favicon.ico" type="image/x-icon">
+</head>
 <body>
-	<div id="header"></div>
-	<!-- Page content here -->
-	<div id="footer"></div>
-	<script src="../js/main.js"></script>
+    <!-- Header -->
+    <div id="header"></div>
+
+    <!-- Announcements Section -->
+    <section class="announcements scroll-reveal" style="margin-top: 80px;">
+        <div class="container">
+            <h2 class="animate-on-load">ANNOUNCEMENTS</h2>
+            <div class="announcements-list">
+                <!-- Announcements will be loaded dynamically from Supabase -->
+                <div style="text-align: center; padding: 40px;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 32px; color: #667eea;"></i>
+                    <p>Loading announcements...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <div id="footer"></div>
+    <script src="../js/main.js" type="module"></script>
 </body>
+</html>

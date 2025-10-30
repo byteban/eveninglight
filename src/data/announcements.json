@@ -4,49 +4,57 @@
       "id": 1,
       "title": "Sunday Worship Services",
       "date": "Ongoing - Every Sunday",
-      "description": "Join us every Sunday at 10:00 AM for inspiring worship, powerful preaching, and wonderful fellowship. Our services include contemporary worship music, children's ministry, and a welcoming atmosphere for all ages."
+      "text": "Join us every Sunday at 10:00 AM for inspiring worship, powerful preaching, and wonderful fellowship. Our services include contemporary worship music, children's ministry, and a welcoming atmosphere for all ages.",
+      "priority": "high"
     },
     {
       "id": 2,
       "title": "Community Thanksgiving Dinner",
       "date": "November 23, 2025 at 5:00 PM",
-      "description": "Bring your family and friends for a special Thanksgiving celebration! We'll share a delicious meal together and give thanks for God's blessings. Please sign up in the church lobby or contact the office. Volunteers needed!"
+      "text": "Bring your family and friends for a special Thanksgiving celebration! We'll share a delicious meal together and give thanks for God's blessings. Please sign up in the church lobby or contact the office. Volunteers needed!",
+      "priority": "high"
     },
     {
       "id": 3,
       "title": "Youth Bible Study",
       "date": "Every Wednesday at 6:30 PM",
-      "description": "Calling all youth ages 12-18! Join us for an engaging Bible study where we explore God's Word, build friendships, and grow together in faith. Snacks provided. Bring a friend!"
+      "text": "Calling all youth ages 12-18! Join us for an engaging Bible study where we explore God's Word, build friendships, and grow together in faith. Snacks provided. Bring a friend!",
+      "priority": "normal"
     },
     {
       "id": 4,
       "title": "Christmas Choir Practice",
       "date": "Starting November 1, 2025 - Every Tuesday at 7:00 PM",
-      "description": "Get ready for our Christmas celebration! The choir is preparing special music for the season. No audition required - all voices welcome. Join us in making beautiful music for the Lord."
+      "text": "Get ready for our Christmas celebration! The choir is preparing special music for the season. No audition required - all voices welcome. Join us in making beautiful music for the Lord.",
+      "priority": "normal"
     },
     {
       "id": 5,
       "title": "Women's Ministry Brunch",
       "date": "November 12, 2025 at 10:00 AM",
-      "description": "Ladies, join us for a morning of fellowship, encouragement, and inspiration. Guest speaker Sister Grace Johnson will share about 'Finding Joy in Every Season.' RSVP by November 5th."
+      "text": "Ladies, join us for a morning of fellowship, encouragement, and inspiration. Guest speaker Sister Grace Johnson will share about 'Finding Joy in Every Season.' RSVP by November 5th.",
+      "priority": "normal"
     },
     {
       "id": 6,
       "title": "Men's Prayer Breakfast",
       "date": "November 5, 2025 at 7:00 AM",
-      "description": "Men of faith, gather with us for breakfast, prayer, and discussion. This month we're focusing on 'Leading Your Family with Purpose.' All men are welcome - invite your sons, fathers, and brothers!"
+      "text": "Men of faith, gather with us for breakfast, prayer, and discussion. This month we're focusing on 'Leading Your Family with Purpose.' All men are welcome - invite your sons, fathers, and brothers!",
+      "priority": "normal"
     },
     {
       "id": 7,
       "title": "Community Service Day",
       "date": "November 19, 2025 at 9:00 AM",
-      "description": "Let's serve our community together! We'll be partnering with the local food bank and helping with neighborhood cleanup. Lunch provided. Sign up at the welcome desk."
+      "text": "Let's serve our community together! We'll be partnering with the local food bank and helping with neighborhood cleanup. Lunch provided. Sign up at the welcome desk.",
+      "priority": "normal"
     },
     {
       "id": 8,
       "title": "New Member Class",
       "date": "Starting November 6, 2025 - Four Week Course",
-      "description": "Interested in becoming a member of ELT? Join Pastor Michael for a four-week class covering our beliefs, mission, and how to get involved. Classes meet after Sunday service. Register at the church office."
+      "text": "Interested in becoming a member of ELT? Join Pastor Michael for a four-week class covering our beliefs, mission, and how to get involved. Classes meet after Sunday service. Register at the church office.",
+      "priority": "normal"
     }
   ]
 }
