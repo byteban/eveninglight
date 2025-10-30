@@ -420,20 +420,58 @@ function fixFooterLogoPath() {
 function initializeNavbar() {
 	const navToggle = document.getElementById('navToggle');
 	const navLinks = document.getElementById('navLinks');
+	const navOverlay = document.getElementById('navOverlay');
 	const navLogo = document.querySelector('.nav-logo');
 	
 	// Mobile menu toggle
 	if (navToggle && navLinks) {
+		// Toggle open/close
 		navToggle.addEventListener('click', function() {
-			navLinks.classList.toggle('open');
+			const isOpen = navLinks.classList.toggle('open');
 			navToggle.classList.toggle('active');
+			document.body.classList.toggle('no-scroll', isOpen);
+			navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+			if (navOverlay) navOverlay.classList.toggle('visible', isOpen);
+
+			if (isOpen) {
+				const firstLink = navLinks.querySelector('a');
+				firstLink?.focus();
+			}
 		});
-		
-		// Close mobile menu when clicking outside
-		document.addEventListener('click', function(e) {
-			if (!navToggle.contains(e.target) && !navLinks.contains(e.target)) {
+
+		// Close on overlay click
+		if (navOverlay) {
+			navOverlay.addEventListener('click', () => {
 				navLinks.classList.remove('open');
 				navToggle.classList.remove('active');
+				document.body.classList.remove('no-scroll');
+				navToggle.setAttribute('aria-expanded', 'false');
+				navOverlay.classList.remove('visible');
+			});
+		}
+
+		// Close mobile menu when clicking outside (fallback)
+		document.addEventListener('click', function(e) {
+			if (!navToggle.contains(e.target) && !navLinks.contains(e.target) && !navOverlay?.contains(e.target)) {
+				navLinks.classList.remove('open');
+				navToggle.classList.remove('active');
+				document.body.classList.remove('no-scroll');
+				navToggle.setAttribute('aria-expanded', 'false');
+				if (navOverlay) navOverlay.classList.remove('visible');
+			}
+		});
+
+		// Close on Escape key for accessibility
+		document.addEventListener('keydown', (e) => {
+			if (e.key === 'Escape') {
+				if (navLinks.classList.contains('open')) {
+					navLinks.classList.remove('open');
+					navToggle.classList.remove('active');
+					document.body.classList.remove('no-scroll');
+					navToggle.setAttribute('aria-expanded', 'false');
+					if (navOverlay) navOverlay.classList.remove('visible');
+					navToggle.focus();
+				}
 			}
 		});
 	}

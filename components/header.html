@@ -9,13 +9,13 @@
                 </div>
             </div>
             
-            <div class="nav-toggle" id="navToggle">
+            <button class="nav-toggle" id="navToggle" aria-label="Open navigation menu" aria-controls="navLinks" aria-expanded="false">
                 <span></span>
                 <span></span>
                 <span></span>
-            </div>
+            </button>
             
-            <ul class="nav-links" id="navLinks">
+            <ul class="nav-links" id="navLinks" role="menu">
                 <li><a href="#" data-page="home" class="nav-home">HOME</a></li>
                 <li><a href="#" data-page="sermons" class="nav-link">SERMONS</a></li>
                 <li><a href="#" data-page="gallery" class="nav-link">GALLERY</a></li>
@@ -23,6 +23,8 @@
                 <li><a href="#" data-page="about" class="nav-link">ABOUT</a></li>
                 <li><a href="#" data-page="contact" class="nav-link">CONTACT</a></li>
             </ul>
+            <!-- Overlay shown when mobile nav is open -->
+            <div id="navOverlay" class="nav-overlay" aria-hidden="true"></div>
         </div>
     </nav>
 </header>
