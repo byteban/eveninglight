@@ -3,12 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Evening Light Tabernacle</title>
+    
+    <!-- Primary Meta Tags -->
+    <title>Evening Light Tabernacle - Welcome Home</title>
+    <meta name="title" content="Evening Light Tabernacle - Welcome Home">
+    <meta name="description" content="Welcome to Evening Light Tabernacle. Join our vibrant Christian community for worship, fellowship, and spiritual growth. Weekly sermons, events, and services available.">
+    <meta name="keywords" content="Evening Light Tabernacle, church, Christian, worship, sermons, faith, community, prayer, Bible study, gospel, spiritual growth">
+    <meta name="author" content="Evening Light Tabernacle">
+    <meta name="copyright" content="Evening Light Tabernacle">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="English">
+    <meta name="revisit-after" content="7 days">
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#1e3a8a">
+    <meta name="msapplication-TileColor" content="#1e3a8a">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://byteban.github.io/eveninglight/">
+    <meta property="og:title" content="Evening Light Tabernacle - Welcome Home">
+    <meta property="og:description" content="Welcome to Evening Light Tabernacle. Join our vibrant Christian community for worship, fellowship, and spiritual growth. Weekly sermons, events, and services available.">
+    <meta property="og:image" content="https://byteban.github.io/eveninglight/assets/images/ELT4.png">
+    <meta property="og:site_name" content="Evening Light Tabernacle">
+    <meta property="og:locale" content="en_US">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://byteban.github.io/eveninglight/">
+    <meta property="twitter:title" content="Evening Light Tabernacle - Welcome Home">
+    <meta property="twitter:description" content="Welcome to Evening Light Tabernacle. Join our vibrant Christian community for worship, fellowship, and spiritual growth.">
+    <meta property="twitter:image" content="https://byteban.github.io/eveninglight/assets/images/ELT4.png">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://byteban.github.io/eveninglight/">
+    
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="css/styles.css" as="style">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style">
+    <link rel="preload" href="assets/images/hero.png" as="image">
+    
+    <!-- DNS Prefetch for External Resources -->
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- Favicon -->
     <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16x16.png">
 </head>
 <body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-content">
+            <img src="assets/images/ELT4.png" alt="Evening Light Tabernacle" class="loading-logo">
+            <div class="loading-dots">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+        </div>
+    </div>
+
     <!-- Announcement Banner (Mobile - shows below navbar) -->
     <div id="announcement-banner" class="announcement-banner" style="display: none;">
         <div class="announcement-banner-content">
@@ -71,7 +134,7 @@
         <section class="latest-sermon scroll-reveal">
             <h2 class="animate-on-load">LATEST SERMON</h2>
             <div class="sermon-card">
-                <img src="assets/images/placeholder.png" alt="Sermon Video" style="width: 100%; height: 400px; object-fit: cover;">
+                <img src="assets/images/placeholder.png" alt="Sermon Video" loading="lazy" style="width: 100%; height: 400px; object-fit: cover;">
                 <div class="sermon-info">
                     <h3>Title of the Latest Sermon</h3>
                     <p>Brief description of the latest sermon goes here.</p>
@@ -83,18 +146,18 @@
         <!---Gallery Preview-->
         <section class="gallery-preview scroll-reveal">
             <h2 class="animate-on-load">GALLERY</h2>
-            <div class="gallery-grid">
+            <div class="gallery-grid home-gallery">
                 <div class="gallery-item animate-delay-1">
-                    <img src="assets/images/placeholder.png" alt="Church Worship">
+                    <img src="assets/images/placeholder.png" alt="Church Worship" loading="lazy">
                 </div>
                 <div class="gallery-item animate-delay-2">
-                    <img src="assets/images/placeholder.png" alt="Community Service">
+                    <img src="assets/images/placeholder.png" alt="Community Service" loading="lazy">
                 </div>
                 <div class="gallery-item animate-delay-3">
-                    <img src="assets/images/placeholder.png" alt="Youth Ministry">
+                    <img src="assets/images/placeholder.png" alt="Youth Ministry" loading="lazy">
                 </div>
                 <div class="gallery-item animate-delay-4">
-                    <img src="assets/images/placeholder.png" alt="Bible Study">
+                    <img src="assets/images/placeholder.png" alt="Bible Study" loading="lazy">
                 </div>
             </div>
             <a href="pages/gallery.html" class="btn">VIEW FULL GALLERY</a>

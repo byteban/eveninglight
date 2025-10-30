@@ -3,6 +3,23 @@ import { supabase, formatDate, getYouTubeEmbedUrl } from './supabase-config.js';
 import { getActiveAnnouncement, getGalleryPhotos } from './supabase-data.js';
 
 // ============================================
+// LOADING SCREEN
+// ============================================
+
+function hideLoadingScreen() {
+	const loadingScreen = document.getElementById('loading-screen');
+	if (loadingScreen) {
+		setTimeout(() => {
+			loadingScreen.classList.add('hidden');
+			// Remove from DOM after transition
+			setTimeout(() => {
+				loadingScreen.remove();
+			}, 500);
+		}, 800); // Show loading for at least 800ms
+	}
+}
+
+// ============================================
 // SCROLL REVEAL ANIMATIONS
 // ============================================
 
@@ -81,6 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		initializeAnnouncements();
 		initializeHeroTextRotation();
 		initPageAnimations(); // Initialize animations
+		hideLoadingScreen(); // Hide loading screen after everything is loaded
 		
 		// Load dynamic content based on page
 		if (currentPath.includes('sermons.html') || currentPath.includes('/sermons')) {
@@ -459,16 +477,18 @@ function setupSmartNavigation() {
 function navigateToPage(page) {
 	const currentPath = window.location.pathname;
 	const isInPagesFolder = currentPath.includes('/pages/');
-	const isGitHubPages = window.location.hostname.includes('github.io');
-	const baseUrl = isGitHubPages ? '/eveninglight' : '';
 	
 	let targetUrl;
 	
 	if (page === 'home') {
-		targetUrl = isInPagesFolder ? `${baseUrl}/index.html` : `${baseUrl}/index.html`;
+		targetUrl = isInPagesFolder ? '../index.html' : 'index.html';
 	} else {
-		targetUrl = `${baseUrl}/pages/${page}.html`;
+		targetUrl = isInPagesFolder ? `${page}.html` : `pages/${page}.html`;
 	}
+	
+	// Check if server supports clean URLs (check for .htaccess or similar)
+	// For now, use traditional .html URLs
+	// In production with .htaccess, you can use: targetUrl = page === 'home' ? '/' : `/${page}`;
 	
 	window.location.href = targetUrl;
 }
