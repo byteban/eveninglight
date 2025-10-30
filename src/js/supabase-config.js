@@ -7,8 +7,21 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.0';
 const supabaseUrl = 'https://tvqhvavhkotitmdjcfvh.supabase.co'; // Example: https://xxxxx.supabase.co
 const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2cWh2YXZoa290aXRtZGpjZnZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE4MDAzMDYsImV4cCI6MjA3NzM3NjMwNn0.uF-lYZmz5k2ha4pAspFXvlWyMmhpm9KhBWTkFA6XYEo'; // Get from Supabase dashboard
 
-// Initialize Supabase client
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Initialize Supabase client with enhanced mobile support
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+        // Use localStorage for better mobile compatibility
+        storage: window.localStorage,
+        // Auto refresh tokens
+        autoRefreshToken: true,
+        // Persist session across page reloads
+        persistSession: true,
+        // Detect session from URL (for OAuth flows)
+        detectSessionInUrl: true,
+        // Set flow type to 'pkce' for better security on mobile
+        flowType: 'pkce'
+    }
+});
 
 // Helper function to format dates
 export function formatDate(dateString) {

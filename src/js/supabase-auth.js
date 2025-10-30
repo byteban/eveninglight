@@ -1,6 +1,40 @@
 // Supabase Authentication Module
 import { supabase } from './supabase-config.js';
 
+// Helper function to get the correct base path for GitHub Pages
+function getBasePath() {
+    // Check if we're on GitHub Pages
+    const hostname = window.location.hostname;
+    const pathname = window.location.pathname;
+    
+    if (hostname.includes('github.io')) {
+        // Extract repo name from path (e.g., /eveninglight/)
+        const match = pathname.match(/^\/([^\/]+)\//);
+        if (match) {
+            return `/${match[1]}/admin`;
+        }
+    }
+    
+    // Check if we're in the admin folder already
+    if (pathname.includes('/admin/')) {
+        return pathname.substring(0, pathname.indexOf('/admin/') + 6);
+    }
+    
+    // Default to relative path
+    return './';
+}
+
+// Helper function to build admin URL
+function getAdminUrl(page) {
+    const basePath = getBasePath();
+    if (basePath.startsWith('/')) {
+        // Absolute path for GitHub Pages
+        return `${basePath}${page}`;
+    }
+    // Relative path for local
+    return `./${page}`;
+}
+
 // Login function
 export async function login(email, password) {
     try {
@@ -45,8 +79,12 @@ export async function logout() {
         const { error } = await supabase.auth.signOut();
         if (error) throw error;
 
-        // Redirect to login page
-        window.location.href = './login.html';
+        // Clear any stored session data
+        localStorage.removeItem('supabase.auth.token');
+        sessionStorage.clear();
+
+        // Redirect to login page with proper path
+        window.location.href = getAdminUrl('login.html');
         return { success: true };
     } catch (error) {
         console.error('Logout error:', error);
@@ -103,7 +141,7 @@ export async function protectAdminPage() {
     const authStatus = await checkAuth();
     
     if (!authStatus.authenticated) {
-        window.location.href = './login.html';
+        window.location.href = getAdminUrl('login.html');
         return false;
     }
     
@@ -115,7 +153,7 @@ if (window.location.pathname.includes('login.html')) {
     // Check if user is already logged in
     checkAuth().then(authStatus => {
         if (authStatus.authenticated) {
-            window.location.href = './dashboard.html';
+            window.location.href = getAdminUrl('dashboard.html');
         }
     });
     
@@ -148,7 +186,7 @@ if (window.location.pathname.includes('login.html')) {
             
             // Wait longer on mobile for better reliability
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-            const delay = isMobile ? 1000 : 500;
+            const delay = isMobile ? 2000 : 1000; // Increased mobile delay
             
             setTimeout(async () => {
                 // Manually trigger login instead of form submit
@@ -164,9 +202,10 @@ if (window.location.pathname.includes('login.html')) {
                     // Clear URL parameters for security
                     window.history.replaceState({}, document.title, window.location.pathname);
                     
+                    // Wait longer on mobile before redirecting
                     setTimeout(() => {
-                        window.location.href = './dashboard.html';
-                    }, 500);
+                        window.location.href = getAdminUrl('dashboard.html');
+                    }, isMobile ? 1000 : 500);
                 } else {
                     errorDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + (result.error || 'Login failed. Please try again.');
                     errorDiv.style.display = 'block';
@@ -204,10 +243,13 @@ if (window.location.pathname.includes('login.html')) {
                     window.history.replaceState({}, document.title, window.location.pathname);
                 }
                 
-                // Redirect to dashboard after short delay
+                // Detect mobile and wait longer before redirect
+                const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+                
+                // Redirect to dashboard after delay
                 setTimeout(() => {
-                    window.location.href = './dashboard.html';
-                }, 500);
+                    window.location.href = getAdminUrl('dashboard.html');
+                }, isMobile ? 1000 : 500);
             } else {
                 // Show error with icon
                 errorDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + (result.error || 'Login failed. Please try again.');
