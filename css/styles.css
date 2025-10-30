@@ -33,10 +33,10 @@ html {
 .nav-overlay {
 	position: fixed;
 	inset: 0;
-	background: rgba(0, 0, 0, 0.85);
+	background: rgba(0, 0, 0, 0.7);
 	opacity: 0;
 	visibility: hidden;
-	transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+	transition: opacity 0.3s ease, visibility 0.3s ease;
 	z-index: 999;
 }
 
@@ -470,7 +470,13 @@ html {
 	.navbar {
 		height: 65px;
 		background: #1a1a1a;
-		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+		box-shadow: none;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	}
+	
+	.navbar:hover {
+		background: #1a1a1a;
+		box-shadow: none;
 	}
 	
 	.nav-links {
@@ -486,8 +492,8 @@ html {
 		justify-content: flex-start;
 		padding-top: 2rem;
 		transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-		border-left: 3px solid var(--primary-gold);
-		box-shadow: -5px 0 25px rgba(0, 0, 0, 0.7);
+		border-left: 2px solid rgba(255, 255, 255, 0.1);
+		box-shadow: none;
 		z-index: 1000;
 		overflow-y: auto;
 	}
@@ -519,10 +525,10 @@ html {
 		text-align: center;
 		padding: 14px 18px;
 		font-size: 1rem;
-		border-radius: 8px;
+		border-radius: 6px;
 		color: #ffffff;
-		background: rgba(255, 255, 255, 0.05);
-		border: 2px solid rgba(255, 255, 255, 0.1);
+		background: transparent;
+		border: 1px solid rgba(255, 255, 255, 0.1);
 		transition: all 0.3s ease;
 		font-weight: 600;
 		letter-spacing: 1px;
@@ -531,11 +537,9 @@ html {
 	
 	.nav-links a:hover,
 	.nav-links a.active {
-		background: var(--primary-gold);
-		color: #1a1a1a;
+		background: rgba(255, 255, 255, 0.1);
+		color: var(--primary-gold);
 		border-color: var(--primary-gold);
-		transform: translateX(-5px);
-		box-shadow: 0 4px 15px rgba(246, 178, 26, 0.4);
 	}
 	
 	.nav-home {
@@ -551,6 +555,7 @@ html {
 	.nav-title {
 		font-size: 1rem;
 		color: #ffffff;
+		text-shadow: none;
 	}
 	
 	.nav-subtitle {
@@ -560,6 +565,11 @@ html {
 	
 	.nav-logo img {
 		height: 42px;
+		filter: none;
+	}
+	
+	.nav-logo:hover {
+		transform: none;
 	}
 	
 	/* Ensure navbar stays on top */
@@ -582,12 +592,20 @@ html {
 @media (max-width: 480px) {
 	.navbar {
 		height: 60px;
+		box-shadow: none;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	}
+	
+	.navbar:hover {
+		background: #1a1a1a;
+		box-shadow: none;
 	}
 	
 	.nav-links {
 		top: 60px;
 		height: calc(100vh - 60px);
 		width: 80%;
+		box-shadow: none;
 	}
 	
 	.nav-container {
@@ -597,6 +615,7 @@ html {
 	.nav-title {
 		font-size: 0.9rem;
 		color: #ffffff;
+		text-shadow: none;
 	}
 	
 	.nav-subtitle {
@@ -607,11 +626,13 @@ html {
 	.nav-logo img {
 		height: 36px;
 		margin-right: 8px;
+		filter: none;
 	}
 	
 	.nav-links a {
 		padding: 12px 16px;
 		font-size: 0.95rem;
+		border-radius: 6px;
 	}
 }
 /* Hero Section Styles */
