@@ -1,6 +1,8 @@
 # Evening Light Tabernacle - Church Website
 
-A beautiful, modern, and responsive website for Eternal Life Tabernacle, featuring a clean design with blue, white, and golden yellow theme colors.
+A beautiful, modern, and responsive website for Evening Light Tabernacle, featuring a clean design with blue, white, and golden yellow theme colors.
+
+🌐 **Live Site**: [https://byteban.github.io/eveninglight/](https://byteban.github.io/eveninglight/)
 
 ## 🌟 Features
 
@@ -164,7 +166,27 @@ Sample data files are included in `src/data/` for future dynamic loading:
 
 These can be used with JavaScript to load content dynamically or integrated with a backend service like Firebase.
 
-## 🛠️ Technologies Used
+## � Deployment
+
+### GitHub Pages
+This site is deployed on GitHub Pages at: [https://byteban.github.io/eveninglight/](https://byteban.github.io/eveninglight/)
+
+To deploy updates:
+```bash
+git add .
+git commit -m "Your commit message"
+git push origin main
+```
+
+Changes will be live within 1-2 minutes.
+
+### Custom Domain (Optional)
+To use a custom domain:
+1. Add a `CNAME` file to the root with your domain name
+2. Configure DNS settings at your domain registrar
+3. Update the domain in GitHub repository settings → Pages
+
+## �🛠️ Technologies Used
 
 - **HTML5**: Semantic markup
 - **CSS3**: Modern styling with CSS Grid and Flexbox

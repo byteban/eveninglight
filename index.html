@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evening Light Tabernacle</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <!-- Announcement Banner (Mobile - shows below navbar) -->
+    <div id="announcement-banner" class="announcement-banner" style="display: none;">
+        <div class="announcement-banner-content">
+            <span class="announcement-banner-icon"><i class="fas fa-bullhorn"></i></span>
+            <span class="announcement-banner-text"></span>
+            <button class="announcement-banner-close" onclick="closeAnnouncementBanner()"><i class="fas fa-times"></i></button>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <!--Get header and footer from C:\projects\church-website\src\components-->
+        <div id="header"></div>
+        
+    <!-- Announcement Sidebar (Desktop) -->
+    <div id="announcement-sidebar" class="announcement-sidebar" style="display: none;">
+        <div class="announcement-sidebar-header">
+            <h4><i class="fas fa-bullhorn"></i> Latest Announcement</h4>
+            <button class="announcement-sidebar-close" onclick="closeAnnouncementSidebar()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="announcement-sidebar-content">
+            <h3 id="sidebar-announcement-title"></h3>
+            <p id="sidebar-announcement-text"></p>
+            <a href="pages/announcements.html" class="btn-small">View All</a>
+        </div>
+    </div>
+
+        <!-- Hero Section -->
+        <div class="hero">
+            <div class="overlay"></div>
+            <div class="hero-content">
+                <h1 id="hero-title">WELCOME TO EVENING LIGHT TABERNACLE</h1>
+                <p id="hero-description">Discover a place of worship, fellowship, and spiritual growth in our community</p>
+                <a href="pages/sermons.html" id="hero-button" class="hero-btn">EXPLORE OUR CHURCH</a>
+            </div>
+        </div>
+        
+        <!-- Service Times Section -->
+        <section class="service-times-section scroll-reveal" id="service-times">
+            <h2 class="animate-on-load">SERVICE TIMES</h2>
+            <div class="service-times-container">
+                <div class="service-time-card animate-delay-1">
+                    <div class="service-icon"><i class="far fa-calendar-alt"></i></div>
+                    <h3>Thursday Service</h3>
+                    <p class="service-time">5:00 PM</p>
+                    <p class="service-description">Join us for our midweek service of worship and teaching.</p>
+                </div>
+                <div class="service-time-card animate-delay-2">
+                    <div class="service-icon"><i class="fas fa-church"></i></div>
+                    <h3>Sunday Service</h3>
+                    <p class="service-time">8:00 AM</p>
+                    <p class="service-description">Our main Sunday worship service with communion and fellowship.</p>
+                </div>
+            </div>
+            <p style="text-align: center; margin-top: 2rem; color: var(--text-light);">
+                All are welcome to join us for worship and fellowship!
+            </p>
+        </section>
+
+        <!---Latest Sermon Section-->
+        <section class="latest-sermon scroll-reveal">
+            <h2 class="animate-on-load">LATEST SERMON</h2>
+            <div class="sermon-card">
+                <img src="assets/images/placeholder.png" alt="Sermon Video" style="width: 100%; height: 400px; object-fit: cover;">
+                <div class="sermon-info">
+                    <h3>Title of the Latest Sermon</h3>
+                    <p>Brief description of the latest sermon goes here.</p>
+                    <a href="pages/sermons.html" class="btn">WATCH NOW</a>
+                </div>
+            </div>
+        </section>
+
+        <!---Gallery Preview-->
+        <section class="gallery-preview scroll-reveal">
+            <h2 class="animate-on-load">GALLERY</h2>
+            <div class="gallery-grid">
+                <div class="gallery-item animate-delay-1">
+                    <img src="assets/images/placeholder.png" alt="Church Worship">
+                </div>
+                <div class="gallery-item animate-delay-2">
+                    <img src="assets/images/placeholder.png" alt="Community Service">
+                </div>
+                <div class="gallery-item animate-delay-3">
+                    <img src="assets/images/placeholder.png" alt="Youth Ministry">
+                </div>
+                <div class="gallery-item animate-delay-4">
+                    <img src="assets/images/placeholder.png" alt="Bible Study">
+                </div>
+            </div>
+            <a href="pages/gallery.html" class="btn">VIEW FULL GALLERY</a>
+        </section>
+
+    <!-- Footer -->
+        <div id="footer"></div>
+    <script src="js/announcement-config.js"></script>
+    <script src="js/main.js" type="module"></script>
+</body>
+</html>
