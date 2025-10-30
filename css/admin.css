@@ -291,6 +291,44 @@
     box-shadow: none;
 }
 
+.back-to-website-btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    color: var(--primary-dark);
+    border: 2px solid var(--primary-dark);
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 15px;
+    text-align: center;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+.back-to-website-btn:hover {
+    background: var(--primary-dark);
+    color: var(--primary-gold);
+    border-color: var(--primary-gold);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(44, 44, 44, 0.2);
+}
+
+.back-to-website-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(44, 44, 44, 0.15);
+}
+
+.back-to-website-btn i {
+    margin-right: 8px;
+}
+
 .login-footer {
     text-align: center;
     margin-top: 25px;

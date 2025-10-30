@@ -83,8 +83,8 @@ export async function logout() {
         localStorage.removeItem('supabase.auth.token');
         sessionStorage.clear();
 
-        // Redirect to login page with proper path
-        window.location.href = getAdminUrl('login.html');
+        // Redirect to login page - use relative path
+        window.location.href = './login.html';
         return { success: true };
     } catch (error) {
         console.error('Logout error:', error);
@@ -141,7 +141,7 @@ export async function protectAdminPage() {
     const authStatus = await checkAuth();
     
     if (!authStatus.authenticated) {
-        window.location.href = getAdminUrl('login.html');
+        window.location.href = './login.html';
         return false;
     }
     
@@ -153,7 +153,7 @@ if (window.location.pathname.includes('login.html')) {
     // Check if user is already logged in
     checkAuth().then(authStatus => {
         if (authStatus.authenticated) {
-            window.location.href = getAdminUrl('dashboard.html');
+            window.location.href = './dashboard.html';
         }
     });
     
@@ -204,7 +204,7 @@ if (window.location.pathname.includes('login.html')) {
                     
                     // Wait longer on mobile before redirecting
                     setTimeout(() => {
-                        window.location.href = getAdminUrl('dashboard.html');
+                        window.location.href = './dashboard.html';
                     }, isMobile ? 1000 : 500);
                 } else {
                     errorDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + (result.error || 'Login failed. Please try again.');
@@ -246,9 +246,9 @@ if (window.location.pathname.includes('login.html')) {
                 // Detect mobile and wait longer before redirect
                 const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
                 
-                // Redirect to dashboard after delay
+                // Redirect to dashboard after delay - use relative path from login.html
                 setTimeout(() => {
-                    window.location.href = getAdminUrl('dashboard.html');
+                    window.location.href = './dashboard.html';
                 }, isMobile ? 1000 : 500);
             } else {
                 // Show error with icon
