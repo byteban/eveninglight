@@ -121,235 +121,79 @@ async function initializeAnnouncements() {
 	
 	if (!isHomePage) return;
 	
-	// Try to fetch active announcement from backend
-	const result = await getActiveAnnouncement();
-	
-	if (result.success && result.data) {
-		// Only show if show_popup is true
-		if (result.data.show_popup) {
-			displayAnnouncement(result.data);
+	// Try to fetch the most recent announcement from backend
+	try {
+		const { data, error } = await supabase
+			.from('announcements')
+			.select('*')
+			.order('date', { ascending: false })
+			.limit(1);
+		
+		if (!error && data && data.length > 0) {
+			// Display the latest announcement
+			displayInlineAnnouncement(data[0]);
 		}
-	} else {
+	} catch (error) {
+		console.log('Could not load announcement:', error);
 		// Fallback to local config if available
 		if (typeof announcementConfig !== 'undefined' && announcementConfig.showAnnouncement) {
 			const announcement = announcementConfig.latestAnnouncement;
-			displayAnnouncement(announcement);
+			displayInlineAnnouncement(announcement);
 		}
 	}
 }
 
-// Display announcement (works for both Firebase and local data)
-function displayAnnouncement(announcement) {
+// Display announcement inline on homepage (new implementation)
+function displayInlineAnnouncement(announcement) {
 	if (!announcement) return;
 	
-	const isMobile = window.innerWidth <= 768;
+	const section = document.getElementById('latestAnnouncementSection');
+	const title = document.getElementById('announcement-title');
+	const text = document.getElementById('announcement-text');
+	const linksContainer = document.getElementById('announcement-links');
 	
-	if (isMobile) {
-		showMobileBanner(announcement);
-	} else {
-		showDesktopSidebar(announcement);
-	}
-}
-
-// Show Mobile Announcement Banner
-function showMobileBanner(announcement) {
-	// Check if user closed it in this session
-	if (sessionStorage.getItem('announcementBannerClosed')) {
-		return;
-	}
+	if (!section || !title || !text) return;
 	
-	const banner = document.getElementById('announcement-banner');
-	const bannerText = document.querySelector('.announcement-banner-text');
+	// Set the content
+	title.textContent = announcement.title;
+	text.textContent = announcement.text;
 	
-	if (banner && bannerText && announcement) {
-		// Set the title as main text
-		bannerText.innerHTML = `
-			<strong>${announcement.title}</strong>
-			${announcement.text ? `<br><span style="font-size: 0.85rem; font-weight: normal;">${announcement.text.substring(0, 100)}${announcement.text.length > 100 ? '...' : ''}</span>` : ''}
-		`;
-		
-		// Add links if available
-		const bannerContent = banner.querySelector('.announcement-banner-content');
-		const existingLinks = bannerContent.querySelector('.mobile-announcement-links');
-		if (existingLinks) existingLinks.remove();
-		
-		const links = [];
-		if (announcement.whatsapp_link) {
-			links.push(`<a href="${announcement.whatsapp_link}" target="_blank" class="mobile-announcement-link" title="WhatsApp">
-				<i class="fab fa-whatsapp"></i>
-			</a>`);
-		}
-		if (announcement.web_link) {
-			links.push(`<a href="${announcement.web_link}" target="_blank" class="mobile-announcement-link" title="Website">
-				<i class="fas fa-globe"></i>
-			</a>`);
-		}
-		if (announcement.phone_link) {
-			const tel = announcement.phone_link.startsWith('tel:') ? announcement.phone_link : `tel:${announcement.phone_link}`;
-			links.push(`<a href="${tel}" class="mobile-announcement-link" title="Call">
-				<i class="fas fa-phone"></i>
-			</a>`);
-		}
-		if (announcement.email_link) {
-			const mailto = announcement.email_link.startsWith('mailto:') ? announcement.email_link : `mailto:${announcement.email_link}`;
-			links.push(`<a href="${mailto}" class="mobile-announcement-link" title="Email">
-				<i class="fas fa-envelope"></i>
-			</a>`);
-		}
-		
-		if (links.length > 0) {
-			const linksDiv = document.createElement('div');
-			linksDiv.className = 'mobile-announcement-links';
-			linksDiv.innerHTML = links.join('');
-			// Insert before close button
-			const closeBtn = bannerContent.querySelector('.announcement-banner-close');
-			if (closeBtn) {
-				closeBtn.parentNode.insertBefore(linksDiv, closeBtn);
-			}
-		}
-		
-		banner.style.display = 'block';
-		document.body.classList.add('banner-visible');
+	// Clear and add action links if available
+	linksContainer.innerHTML = '';
+	const links = [];
+	
+	if (announcement.whatsapp_link) {
+		links.push(`<a href="${announcement.whatsapp_link}" target="_blank" class="action-link">
+			<i class="fab fa-whatsapp"></i> WhatsApp
+		</a>`);
 	}
-}
-
-// Show Desktop Announcement Sidebar
-function showDesktopSidebar(announcement) {
-	// Check if user closed it in this session
-	if (sessionStorage.getItem('announcementSidebarClosed')) {
-		return;
+	if (announcement.web_link) {
+		links.push(`<a href="${announcement.web_link}" target="_blank" class="action-link">
+			<i class="fas fa-globe"></i> Website
+		</a>`);
+	}
+	if (announcement.phone_link) {
+		const tel = announcement.phone_link.startsWith('tel:') ? announcement.phone_link : `tel:${announcement.phone_link}`;
+		links.push(`<a href="${tel}" class="action-link">
+			<i class="fas fa-phone"></i> Call
+		</a>`);
+	}
+	if (announcement.email_link) {
+		const mailto = announcement.email_link.startsWith('mailto:') ? announcement.email_link : `mailto:${announcement.email_link}`;
+		links.push(`<a href="${mailto}" class="action-link">
+			<i class="fas fa-envelope"></i> Email
+		</a>`);
 	}
 	
-	const sidebar = document.getElementById('announcement-sidebar');
-	const title = document.getElementById('sidebar-announcement-title');
-	const text = document.getElementById('sidebar-announcement-text');
+	if (links.length > 0) {
+		linksContainer.innerHTML = links.join('');
+	}
 	
-	if (sidebar && title && text && announcement) {
-		title.textContent = announcement.title;
-		text.textContent = announcement.text;
-		
-		// Add links if available
-		const sidebarContent = sidebar.querySelector('.announcement-sidebar-content');
-		const existingLinks = sidebarContent.querySelector('.announcement-links');
-		if (existingLinks) existingLinks.remove();
-		
-		const links = [];
-		if (announcement.whatsapp_link) {
-			links.push(`<a href="${announcement.whatsapp_link}" target="_blank" class="announcement-link">
-				<i class="fab fa-whatsapp"></i> WhatsApp
-			</a>`);
-		}
-		if (announcement.web_link) {
-			links.push(`<a href="${announcement.web_link}" target="_blank" class="announcement-link">
-				<i class="fas fa-globe"></i> Visit Website
-			</a>`);
-		}
-		if (announcement.phone_link) {
-			const tel = announcement.phone_link.startsWith('tel:') ? announcement.phone_link : `tel:${announcement.phone_link}`;
-			links.push(`<a href="${tel}" class="announcement-link">
-				<i class="fas fa-phone"></i> Call Us
-			</a>`);
-		}
-		if (announcement.email_link) {
-			const mailto = announcement.email_link.startsWith('mailto:') ? announcement.email_link : `mailto:${announcement.email_link}`;
-			links.push(`<a href="${mailto}" class="announcement-link">
-				<i class="fas fa-envelope"></i> Email Us
-			</a>`);
-		}
-		
-		if (links.length > 0) {
-			const linksDiv = document.createElement('div');
-			linksDiv.className = 'announcement-links';
-			linksDiv.innerHTML = links.join('');
-			// Insert before "View All" button
-			const viewAllBtn = sidebarContent.querySelector('.btn-small');
-			if (viewAllBtn) {
-				viewAllBtn.parentNode.insertBefore(linksDiv, viewAllBtn);
-			} else {
-				sidebarContent.appendChild(linksDiv);
-			}
-		}
-		
-		// Remove hidden class and show
-		sidebar.classList.remove('hidden');
-		sidebar.style.display = 'block';
-		
-		// Sidebar is fixed position - no layout adjustment needed
-	}
+	// Show the section
+	section.style.display = 'block';
 }
 
-// Close Mobile Banner
-window.closeAnnouncementBanner = function() {
-	const banner = document.getElementById('announcement-banner');
-	if (banner) {
-		banner.style.animation = 'slideUp 0.3s ease';
-		setTimeout(() => {
-			banner.style.display = 'none';
-			document.body.classList.remove('banner-visible');
-			banner.style.animation = '';
-		}, 300);
-		// Store in session so it stays closed during this visit
-		sessionStorage.setItem('announcementBannerClosed', 'true');
-	}
-}
-
-// Close Desktop Sidebar
-window.closeAnnouncementSidebar = function() {
-	const sidebar = document.getElementById('announcement-sidebar');
-	if (sidebar) {
-		sidebar.classList.add('hidden');
-		// Store in session so it stays closed during this visit
-		sessionStorage.setItem('announcementSidebarClosed', 'true');
-	}
-}
-
-// Adjust content width for sidebar - REMOVED as sidebar is fixed position
-function adjustContentForSidebar() {
-	// No longer needed - sidebar is fixed and doesn't affect layout
-}
-
-// Reset content width - REMOVED as sidebar is fixed position
-function resetContentWidth() {
-	// No longer needed - sidebar is fixed and doesn't affect layout
-}
-
-// Handle window resize
-// Handle window resize
-window.addEventListener('resize', function() {
-	const isHomePage = !window.location.pathname.includes('/pages/');
-	
-	if (isHomePage) {
-		const isMobile = window.innerWidth <= 768;
-		const banner = document.getElementById('announcement-banner');
-		const sidebar = document.getElementById('announcement-sidebar');
-		
-		// Check if announcements are being shown (not closed by user)
-		const bannerClosed = sessionStorage.getItem('announcementBannerClosed');
-		const sidebarClosed = sessionStorage.getItem('announcementSidebarClosed');
-		
-		if (isMobile) {
-			// Switch to mobile view
-			if (sidebar) {
-				sidebar.style.display = 'none';
-			}
-			// Only show banner if it wasn't closed and sidebar was visible
-			if (banner && !bannerClosed && sidebar && !sidebarClosed) {
-				banner.style.display = 'block';
-				document.body.classList.add('banner-visible');
-			}
-		} else {
-			// Switch to desktop view
-			if (banner) {
-				banner.style.display = 'none';
-				document.body.classList.remove('banner-visible');
-			}
-			// Only show sidebar if it wasn't closed and it's not hidden
-			if (sidebar && !sidebarClosed && !sidebar.classList.contains('hidden')) {
-				sidebar.style.display = 'block';
-			}
-		}
-	}
-});
+// Handle window resize - removed old announcement banner/sidebar logic
 
 // Load header and footer components
 function loadComponent(id, url) {
@@ -865,50 +709,34 @@ function displayAnnouncements(announcements, fromSupabase = false) {
 	
 	announcementsContainer.innerHTML = '';
 	
-	announcements.forEach(announcement => {
+	announcements.forEach((announcement, index) => {
 		const date = fromSupabase ? formatDate(announcement.date) : announcement.date;
 		
-		// Build links HTML if available
+		// Build links text if available
 		const links = [];
 		if (announcement.whatsapp_link) {
-			links.push(`<a href="${announcement.whatsapp_link}" target="_blank" class="announcement-action-link">
-				<i class="fab fa-whatsapp"></i> Join WhatsApp Group
-			</a>`);
+			links.push(`<a href="${announcement.whatsapp_link}" target="_blank">WhatsApp</a>`);
 		}
 		if (announcement.web_link) {
-			links.push(`<a href="${announcement.web_link}" target="_blank" class="announcement-action-link">
-				<i class="fas fa-globe"></i> Visit Website
-			</a>`);
+			links.push(`<a href="${announcement.web_link}" target="_blank">Website</a>`);
 		}
 		if (announcement.phone_link) {
 			const tel = announcement.phone_link.startsWith('tel:') ? announcement.phone_link : `tel:${announcement.phone_link}`;
-			links.push(`<a href="${tel}" class="announcement-action-link">
-				<i class="fas fa-phone"></i> Call Us
-			</a>`);
+			links.push(`<a href="${tel}">Call</a>`);
 		}
 		if (announcement.email_link) {
 			const mailto = announcement.email_link.startsWith('mailto:') ? announcement.email_link : `mailto:${announcement.email_link}`;
-			links.push(`<a href="${mailto}" class="announcement-action-link">
-				<i class="fas fa-envelope"></i> Email Us
-			</a>`);
+			links.push(`<a href="${mailto}">Email</a>`);
 		}
 		
-		const announcementCard = document.createElement('div');
-		announcementCard.className = 'announcement-card';
-		if (announcement.priority === 'high') {
-			announcementCard.classList.add('priority-high');
-		}
-		announcementCard.innerHTML = `
-			<div class="announcement-header">
-				<h3>${announcement.title}</h3>
-				<span class="announcement-date"><i class="fas fa-calendar"></i> ${date}</span>
-			</div>
-			<div class="announcement-body">
-				<p>${announcement.text}</p>
-				${links.length > 0 ? `<div class="announcement-actions">${links.join('')}</div>` : ''}
-			</div>
+		const listItem = document.createElement('li');
+		
+		listItem.innerHTML = `
+			<strong>${announcement.title}</strong> <span class="announcement-date">(${date})</span>
+			<p>${announcement.text}</p>
+			${links.length > 0 ? `<div class="announcement-links">${links.join(' | ')}</div>` : ''}
 		`;
-		announcementsContainer.appendChild(announcementCard);
+		announcementsContainer.appendChild(listItem);
 	});
 }
 
