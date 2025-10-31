@@ -121,8 +121,23 @@ async function initializeAnnouncements() {
 	
 	if (!isHomePage) return;
 	
-	// Try to fetch the most recent announcement from backend
+	// Try to fetch announcement from backend
 	try {
+		// First, try to get the active announcement
+		const { data: activeData, error: activeError } = await supabase
+			.from('announcements')
+			.select('*')
+			.eq('is_active', true)
+			.order('date', { ascending: false })
+			.limit(1);
+		
+		// If there's an active announcement, display it
+		if (!activeError && activeData && activeData.length > 0) {
+			displayInlineAnnouncement(activeData[0], true);
+			return;
+		}
+		
+		// Otherwise, get the most recent announcement
 		const { data, error } = await supabase
 			.from('announcements')
 			.select('*')
@@ -130,26 +145,21 @@ async function initializeAnnouncements() {
 			.limit(1);
 		
 		if (!error && data && data.length > 0) {
-			// Display the latest announcement
-			displayInlineAnnouncement(data[0]);
+			displayInlineAnnouncement(data[0], false);
 		}
 	} catch (error) {
 		console.log('Could not load announcement:', error);
-		// Fallback to local config if available
-		if (typeof announcementConfig !== 'undefined' && announcementConfig.showAnnouncement) {
-			const announcement = announcementConfig.latestAnnouncement;
-			displayInlineAnnouncement(announcement);
-		}
 	}
 }
 
 // Display announcement inline on homepage (new implementation)
-function displayInlineAnnouncement(announcement) {
+function displayInlineAnnouncement(announcement, isActive) {
 	if (!announcement) return;
 	
 	const section = document.getElementById('latestAnnouncementSection');
 	const title = document.getElementById('announcement-title');
 	const text = document.getElementById('announcement-text');
+	const dateEl = document.getElementById('announcement-date');
 	const linksContainer = document.getElementById('announcement-links');
 	
 	if (!section || !title || !text) return;
@@ -158,35 +168,34 @@ function displayInlineAnnouncement(announcement) {
 	title.textContent = announcement.title;
 	text.textContent = announcement.text;
 	
+	// Format and display date
+	if (dateEl && announcement.date) {
+		const date = new Date(announcement.date);
+		const options = { year: 'numeric', month: 'long', day: 'numeric' };
+		dateEl.textContent = date.toLocaleDateString('en-US', options);
+	}
+	
 	// Clear and add action links if available
 	linksContainer.innerHTML = '';
 	const links = [];
 	
 	if (announcement.whatsapp_link) {
-		links.push(`<a href="${announcement.whatsapp_link}" target="_blank" class="action-link">
-			<i class="fab fa-whatsapp"></i> WhatsApp
-		</a>`);
+		links.push(`<a href="${announcement.whatsapp_link}" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a>`);
 	}
 	if (announcement.web_link) {
-		links.push(`<a href="${announcement.web_link}" target="_blank" class="action-link">
-			<i class="fas fa-globe"></i> Website
-		</a>`);
+		links.push(`<a href="${announcement.web_link}" target="_blank"><i class="fas fa-globe"></i> More Info</a>`);
 	}
 	if (announcement.phone_link) {
 		const tel = announcement.phone_link.startsWith('tel:') ? announcement.phone_link : `tel:${announcement.phone_link}`;
-		links.push(`<a href="${tel}" class="action-link">
-			<i class="fas fa-phone"></i> Call
-		</a>`);
+		links.push(`<a href="${tel}"><i class="fas fa-phone"></i> Call</a>`);
 	}
 	if (announcement.email_link) {
 		const mailto = announcement.email_link.startsWith('mailto:') ? announcement.email_link : `mailto:${announcement.email_link}`;
-		links.push(`<a href="${mailto}" class="action-link">
-			<i class="fas fa-envelope"></i> Email
-		</a>`);
+		links.push(`<a href="${mailto}"><i class="fas fa-envelope"></i> Email</a>`);
 	}
 	
 	if (links.length > 0) {
-		linksContainer.innerHTML = links.join('');
+		linksContainer.innerHTML = links.join(' | ');
 	}
 	
 	// Show the section

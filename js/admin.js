@@ -9,7 +9,6 @@ import {
     createAnnouncement,
     deleteAnnouncement,
     setActiveAnnouncement,
-    toggleAnnouncementPopup,
     getGalleryPhotos,
     uploadPhoto,
     deletePhoto
@@ -187,7 +186,6 @@ async function createNewAnnouncement() {
     const title = document.getElementById('announcementTitle').value;
     const date = document.getElementById('announcementDate').value;
     const text = document.getElementById('announcementText').value;
-    const priority = document.getElementById('announcementPriority').value;
     const whatsappLink = document.getElementById('whatsappLink').value.trim();
     const webLink = document.getElementById('webLink').value.trim();
     const phoneLink = document.getElementById('phoneLink').value.trim();
@@ -206,7 +204,7 @@ async function createNewAnnouncement() {
         title,
         date,
         text,
-        priority,
+        priority: 'normal',
         whatsapp_link: whatsappLink || null,
         web_link: webLink || null,
         phone_link: phoneLink || null,
@@ -255,41 +253,30 @@ async function loadAnnouncements() {
             }
             
             return `
-                <div class="content-item ${announcement.priority === 'high' ? 'priority-high' : ''}" data-id="${announcement.id}">
+                <div class="content-item ${announcement.is_active ? 'announcement-active' : ''}" data-id="${announcement.id}">
                     <div class="content-info">
-                        <div class="radio-group">
-                            <input 
-                                type="radio" 
-                                name="activeAnnouncement" 
-                                id="active-${announcement.id}" 
-                                value="${announcement.id}"
-                                ${announcement.is_active ? 'checked' : ''}
-                                onchange="handleSetActiveAnnouncement('${announcement.id}')"
-                            >
-                            <label for="active-${announcement.id}">Set as Active</label>
+                        <div class="announcement-header">
+                            <h3>${announcement.title}</h3>
                             ${announcement.is_active ? '<span class="active-badge">ACTIVE</span>' : ''}
                         </div>
-                        <div class="radio-group" style="margin-top: 8px;">
+                        <p class="announcement-date"><strong>Date:</strong> ${formatDate(announcement.date)}</p>
+                        <p class="announcement-message">${announcement.text}</p>
+                        ${links.length > 0 ? `<div class="announcement-action-links">${links.join(' ')}</div>` : ''}
+                    </div>
+                    <div class="announcement-actions">
+                        <label class="toggle-switch">
                             <input 
                                 type="checkbox" 
-                                id="popup-${announcement.id}" 
-                                ${announcement.show_popup ? 'checked' : ''}
-                                onchange="handleTogglePopup('${announcement.id}', this.checked)"
-                                style="width: 18px; height: 18px; cursor: pointer; accent-color: var(--accent-blue);"
+                                ${announcement.is_active ? 'checked' : ''}
+                                onchange="handleSetActiveAnnouncement('${announcement.id}', this.checked)"
                             >
-                            <label for="popup-${announcement.id}" style="cursor: pointer;">
-                                <i class="fas fa-window-restore"></i> Show Popup/Banner
-                            </label>
-                        </div>
-                        <h3>${announcement.title}</h3>
-                        <p><strong>Date:</strong> ${formatDate(announcement.date)}</p>
-                        <p>${announcement.text}</p>
-                        ${announcement.priority === 'high' ? '<span class="priority-badge">High Priority</span>' : ''}
-                        ${links.length > 0 ? `<p style="margin-top: 10px;"><strong>Links:</strong> ${links.join(' ')}</p>` : ''}
+                            <span class="toggle-slider"></span>
+                            <span class="toggle-label">Set as Active</span>
+                        </label>
+                        <button class="delete-btn" onclick="handleDeleteAnnouncement('${announcement.id}')">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
                     </div>
-                    <button class="delete-btn" onclick="handleDeleteAnnouncement('${announcement.id}')">
-                        <i class="fas fa-trash"></i> Delete
-                    </button>
                 </div>
             `;
         }).join('');
@@ -298,26 +285,34 @@ async function loadAnnouncements() {
     }
 }
 
-window.handleSetActiveAnnouncement = async (announcementId) => {
-    const result = await setActiveAnnouncement(announcementId);
-    
-    if (result.success) {
-        showToast('Active announcement updated', 'success');
-        await loadAnnouncements();
+window.handleSetActiveAnnouncement = async (announcementId, isActive) => {
+    if (isActive) {
+        // Set this announcement as active
+        const result = await setActiveAnnouncement(announcementId);
+        
+        if (result.success) {
+            showToast('Active announcement updated', 'success');
+            await loadAnnouncements();
+        } else {
+            showToast('Error updating active announcement: ' + result.error, 'error');
+            await loadAnnouncements(); // Reload to restore previous state
+        }
     } else {
-        showToast('Error updating active announcement: ' + result.error, 'error');
-        await loadAnnouncements(); // Reload to restore previous state
-    }
-};
-
-window.handleTogglePopup = async (announcementId, showPopup) => {
-    const result = await toggleAnnouncementPopup(announcementId, showPopup);
-    
-    if (result.success) {
-        showToast(`Popup ${showPopup ? 'enabled' : 'disabled'} for this announcement`, 'success');
-    } else {
-        showToast('Error updating popup setting: ' + result.error, 'error');
-        await loadAnnouncements(); // Reload to restore previous state
+        // Deactivate this announcement
+        try {
+            const { error } = await supabase
+                .from('announcements')
+                .update({ is_active: false })
+                .eq('id', announcementId);
+            
+            if (error) throw error;
+            
+            showToast('Announcement deactivated', 'success');
+            await loadAnnouncements();
+        } catch (error) {
+            showToast('Error deactivating announcement: ' + error.message, 'error');
+            await loadAnnouncements();
+        }
     }
 };
 
