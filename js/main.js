@@ -914,7 +914,7 @@ function displayAnnouncements(announcements, fromSupabase = false) {
 
 // Load Gallery Page
 async function loadGalleryPage() {
-	const galleryContainer = document.querySelector('.gallery-grid');
+	const galleryContainer = document.querySelector('.gallery-grid.full-gallery');
 	if (!galleryContainer) {
 		console.warn('Gallery container not found');
 		return;
@@ -931,13 +931,11 @@ async function loadGalleryPage() {
 			// Clear loading message
 			galleryContainer.innerHTML = '';
 			
-			// Add photos from Supabase
-			result.data.forEach(photo => {
+			// Add photos from Supabase (NO DUPLICATES - just show all photos)
+			result.data.forEach((photo, index) => {
 				const galleryItem = document.createElement('div');
 				galleryItem.className = 'gallery-item';
-				galleryItem.style.width = '100%';
-				galleryItem.style.height = 'auto';
-				galleryItem.style.aspectRatio = '1';
+				galleryItem.style.animationDelay = `${index * 0.05}s`;
 				galleryItem.innerHTML = `
 					<img src="${photo.image_url}" alt="${photo.caption || 'Church Photo'}" loading="lazy">
 					${photo.caption ? `<div class="photo-caption">${photo.caption}</div>` : ''}
@@ -957,47 +955,46 @@ async function loadGalleryPage() {
 	}
 }
 
-// Load Gallery Preview on Home Page (4 most recent photos)
+// Load Gallery Preview on Home Page (4 most recent photos - NO DUPLICATES)
 async function loadHomeGalleryPreview() {
-	const galleryContainer = document.querySelector('.gallery-preview .gallery-grid');
-	if (!galleryContainer) return;
+	const galleryContainer = document.querySelector('#homeGalleryPreview');
+	if (!galleryContainer) {
+		console.warn('Home gallery preview container not found');
+		return;
+	}
 	
 	try {
 		// Try to load from Supabase
 		const result = await getGalleryPhotos();
 		
 		if (result.success && result.data && result.data.length > 0) {
-			// Clear existing placeholder images
+			// Clear existing placeholder
 			galleryContainer.innerHTML = '';
 			
-			// Get photos (use at least 4, or all if less)
-			const photos = result.data.slice(0, Math.max(4, result.data.length));
+			// Get first 4 photos (most recent) - NO DUPLICATES
+			const photosToShow = Math.min(4, result.data.length);
+			const photos = result.data.slice(0, photosToShow);
 			
-			// Create scrolling container
-			const scrollContainer = document.createElement('div');
-			scrollContainer.className = 'gallery-grid-scroll';
-			
-			// Duplicate photos for seamless loop
-			const allPhotos = [...photos, ...photos];
-			
-			allPhotos.forEach(photo => {
+			// Add each photo once
+			photos.forEach((photo, index) => {
 				const galleryItem = document.createElement('div');
-				galleryItem.className = 'gallery-item';
+				galleryItem.className = `gallery-item animate-delay-${index + 1}`;
 				galleryItem.innerHTML = `
 					<img src="${photo.image_url}" alt="${photo.caption || 'Church Photo'}" loading="lazy">
 					${photo.caption ? `<div class="photo-caption">${photo.caption}</div>` : ''}
 				`;
-				scrollContainer.appendChild(galleryItem);
+				galleryContainer.appendChild(galleryItem);
 			});
 			
-			galleryContainer.appendChild(scrollContainer);
-			
-			console.log(`Loaded ${photos.length} preview photos on home page with auto-scroll`);
+			console.log(`Loaded ${photos.length} preview photos on home page (no duplicates)`);
 		} else {
+			// No photos - show message
+			galleryContainer.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #666; padding: 20px;">No photos available yet.</div>';
 			console.log('No photos found for home page preview');
 		}
 	} catch (error) {
 		console.error('Error loading gallery preview:', error);
+		galleryContainer.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #e74c3c; padding: 20px;">Error loading photos.</div>';
 	}
 }
 
