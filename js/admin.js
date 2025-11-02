@@ -1,5 +1,5 @@
 // Admin Dashboard JavaScript
-import { supabase, formatDate, getYouTubeEmbedUrl } from './supabase-config.js';
+import { supabase, formatDate, getYouTubeEmbedUrl, testConnection } from './supabase-config.js';
 import { logout, getCurrentUser } from './supabase-auth.js';
 import {
     getSermons,
@@ -17,6 +17,16 @@ import {
 // ==================== INITIALIZATION ====================
 
 document.addEventListener('DOMContentLoaded', async () => {
+    // Test database connection
+    console.log('Testing database connection...');
+    const connectionTest = await testConnection();
+    if (!connectionTest.connected) {
+        console.error('Database connection failed:', connectionTest.error);
+        showToast('Warning: Unable to connect to database. Please check your internet connection.', 'error');
+    } else {
+        console.log('Database connection successful');
+    }
+
     // Show welcome message with user email
     const userResult = await getCurrentUser();
     if (userResult.success && userResult.user) {
@@ -286,33 +296,40 @@ async function loadAnnouncements() {
 }
 
 window.handleSetActiveAnnouncement = async (announcementId, isActive) => {
-    if (isActive) {
-        // Set this announcement as active
-        const result = await setActiveAnnouncement(announcementId);
-        
-        if (result.success) {
-            showToast('Active announcement updated', 'success');
-            await loadAnnouncements();
+    try {
+        if (isActive) {
+            // Set this announcement as active
+            console.log('Setting announcement as active:', announcementId);
+            const result = await setActiveAnnouncement(announcementId);
+            
+            if (result.success) {
+                showToast('Active announcement updated', 'success');
+                await loadAnnouncements();
+            } else {
+                console.error('Failed to set active announcement:', result.error);
+                showToast('Error updating active announcement: ' + result.error, 'error');
+                await loadAnnouncements(); // Reload to restore previous state
+            }
         } else {
-            showToast('Error updating active announcement: ' + result.error, 'error');
-            await loadAnnouncements(); // Reload to restore previous state
-        }
-    } else {
-        // Deactivate this announcement
-        try {
+            // Deactivate this announcement
+            console.log('Deactivating announcement:', announcementId);
             const { error } = await supabase
                 .from('announcements')
                 .update({ is_active: false })
                 .eq('id', announcementId);
             
-            if (error) throw error;
+            if (error) {
+                console.error('Deactivation error:', error);
+                throw error;
+            }
             
             showToast('Announcement deactivated', 'success');
             await loadAnnouncements();
-        } catch (error) {
-            showToast('Error deactivating announcement: ' + error.message, 'error');
-            await loadAnnouncements();
         }
+    } catch (error) {
+        console.error('handleSetActiveAnnouncement error:', error);
+        showToast('Network error: Unable to connect to database. Please check your connection.', 'error');
+        await loadAnnouncements(); // Reload to restore previous state
     }
 };
 

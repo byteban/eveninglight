@@ -155,13 +155,21 @@ export async function getActiveAnnouncement() {
 // Set an announcement as active (and deactivate all others)
 export async function setActiveAnnouncement(announcementId) {
     try {
+        // Check if we have a valid Supabase connection
+        if (!supabase) {
+            throw new Error('Supabase client not initialized');
+        }
+
         // First, deactivate all announcements
         const { error: deactivateError } = await supabase
             .from('announcements')
             .update({ is_active: false })
             .neq('id', '00000000-0000-0000-0000-000000000000'); // Update all rows
 
-        if (deactivateError) throw deactivateError;
+        if (deactivateError) {
+            console.error('Deactivate error:', deactivateError);
+            throw deactivateError;
+        }
 
         // Then activate the selected one
         const { data, error } = await supabase
@@ -170,13 +178,21 @@ export async function setActiveAnnouncement(announcementId) {
             .eq('id', announcementId)
             .select();
 
-        if (error) throw error;
+        if (error) {
+            console.error('Activate error:', error);
+            throw error;
+        }
+
+        if (!data || data.length === 0) {
+            throw new Error('No announcement found with the given ID');
+        }
 
         return {
             success: true,
             data: data[0]
         };
     } catch (error) {
+        console.error('setActiveAnnouncement error:', error);
         return handleError(error, 'setActiveAnnouncement');
     }
 }

@@ -62,10 +62,51 @@ export function getYouTubeEmbedUrl(url) {
 // Helper function to handle errors
 export function handleError(error, context = '') {
     console.error(`Error in ${context}:`, error);
+    
+    // Provide more specific error messages
+    let errorMessage = 'An unknown error occurred';
+    
+    if (error.message) {
+        errorMessage = error.message;
+    }
+    
+    // Check for common connection errors
+    if (error.message && error.message.includes('Failed to fetch')) {
+        errorMessage = 'Network error: Unable to connect to database. Please check your internet connection.';
+    } else if (error.message && error.message.includes('CORS')) {
+        errorMessage = 'CORS error: Database access blocked. Please check your Supabase configuration.';
+    } else if (error.code === 'PGRST116') {
+        errorMessage = 'Database error: The requested resource was not found.';
+    } else if (error.code === 'PGRST301') {
+        errorMessage = 'Permission error: You do not have access to perform this action.';
+    }
+    
     return {
         success: false,
-        error: error.message || 'An unknown error occurred'
+        error: errorMessage,
+        details: error
     };
+}
+
+// Test Supabase connection
+export async function testConnection() {
+    try {
+        const { data, error } = await supabase
+            .from('announcements')
+            .select('id')
+            .limit(1);
+        
+        if (error) {
+            console.error('Connection test failed:', error);
+            return { connected: false, error: error.message };
+        }
+        
+        console.log('Connection test successful');
+        return { connected: true };
+    } catch (error) {
+        console.error('Connection test error:', error);
+        return { connected: false, error: error.message };
+    }
 }
 
 // Helper function to show loading state

@@ -1262,6 +1262,21 @@
         gap: 12px;
         padding: 15px;
     }
+    
+    .content-info {
+        width: 100%;
+        min-width: 0;
+    }
+    
+    .content-info h3 {
+        font-size: 16px;
+        word-wrap: break-word;
+    }
+    
+    .content-info p {
+        font-size: 13px;
+        word-wrap: break-word;
+    }
 
     .delete-btn {
         width: 100%;
