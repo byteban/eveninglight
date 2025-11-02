@@ -125,11 +125,10 @@
         <section class="latest-sermon scroll-reveal">
             <h2 class="animate-on-load">LATEST SERMON</h2>
             <div class="sermon-card">
-                <img src="assets/images/placeholder.png" alt="Sermon Video" loading="lazy" style="width: 100%; height: 400px; object-fit: cover;">
-                <div class="sermon-info">
-                    <h3>Title of the Latest Sermon</h3>
-                    <p>Brief description of the latest sermon goes here.</p>
-                    <a href="pages/sermons.html" class="btn">WATCH NOW</a>
+                <!-- Loading state - will be replaced by JavaScript -->
+                <div style="text-align: center; padding: 60px 20px;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 32px; color: var(--accent-gold); margin-bottom: 15px;"></i>
+                    <p style="color: var(--text-light);">Loading latest sermon...</p>
                 </div>
             </div>
         </section>
@@ -165,6 +164,9 @@
 
     <!-- Footer -->
         <div id="footer"></div>
+    
+    <!-- Lightbox will be dynamically inserted here by JavaScript -->
+    
     <script src="js/announcement-config.js"></script>
     <script src="js/main.js" type="module"></script>
 </body>

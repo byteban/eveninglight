@@ -524,6 +524,8 @@ function initializeHeroTextRotation() {
 // Load Home Page Content (Latest Sermon)
 // Load Home Page Content - Try Supabase first, fallback to JSON
 async function loadHomePageContent() {
+	let sermonLoaded = false;
+	
 	try {
 		// Try loading from Supabase
 		const { data, error } = await supabase
@@ -532,63 +534,97 @@ async function loadHomePageContent() {
 			.order('date', { ascending: false })
 			.limit(1);
 		
-		if (error) throw error;
-		
-		if (data && data.length > 0) {
+		if (!error && data && data.length > 0) {
 			displayLatestSermon(data[0], true); // true = from Supabase
+			sermonLoaded = true;
+			console.log('Latest sermon loaded from Supabase');
 		}
 	} catch (error) {
-		console.log('Supabase not available, using local data:', error);
+		console.log('Supabase not available for sermons, will use local data:', error);
+	}
+	
+	// Fallback to local JSON for sermon if Supabase failed or returned no data
+	if (!sermonLoaded) {
+		const currentPath = window.location.pathname;
+		const isInPagesFolder = currentPath.includes('/pages/');
+		const dataPath = isInPagesFolder ? '../data/sermons.json' : 'data/sermons.json';
+		
+		try {
+			const response = await fetch(dataPath);
+			const data = await response.json();
+			if (data.sermons && data.sermons.length > 0) {
+				displayLatestSermon(data.sermons[0], false); // false = from JSON
+				console.log('Latest sermon loaded from local JSON');
+			}
+		} catch (error) {
+			console.log('Error loading sermon data:', error);
+		}
 	}
 	
 	// Also load gallery preview
 	await loadHomeGalleryPreview();
-	
-	// Fallback to local JSON for sermon if Supabase failed
-	const currentPath = window.location.pathname;
-	const isInPagesFolder = currentPath.includes('/pages/');
-	const dataPath = isInPagesFolder ? '../data/sermons.json' : 'data/sermons.json';
-	
-	fetch(dataPath)
-		.then(response => response.json())
-		.then(data => {
-			if (data.sermons && data.sermons.length > 0) {
-				displayLatestSermon(data.sermons[0], false); // false = from JSON
-			}
-		})
-		.catch(error => console.log('Error loading sermon data:', error));
 }
 
 // Display Latest Sermon on Home Page
 function displayLatestSermon(sermon, fromSupabase = false) {
 	const sermonCard = document.querySelector('.latest-sermon .sermon-card');
-	if (!sermonCard) return;
+	if (!sermonCard) {
+		console.warn('Sermon card container not found');
+		return;
+	}
 	
 	// Handle different field names between Supabase and JSON
 	const videoUrl = fromSupabase ? sermon.video_url : sermon.videoUrl;
 	const date = fromSupabase ? formatDate(sermon.date) : sermon.date;
+	const pastor = sermon.pastor || 'Pastor';
+	const title = sermon.title || 'Latest Sermon';
+	const description = sermon.description || '';
+	const scripture = sermon.scripture || '';
 	
 	const embedUrl = fromSupabase ? getYouTubeEmbedUrl(videoUrl) : extractYouTubeEmbedUrl(videoUrl);
 	
 	if (embedUrl) {
+		// Display video sermon
 		sermonCard.innerHTML = `
-			<iframe 
-				width="100%" 
-				height="400" 
-				src="${embedUrl}" 
-				frameborder="0" 
-				allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-				allowfullscreen
-				style="border-radius: 10px;">
-			</iframe>
+			<div class="sermon-video" style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 10px;">
+				<iframe 
+					width="100%" 
+					height="100%" 
+					src="${embedUrl}" 
+					frameborder="0" 
+					allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+					allowfullscreen
+					style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 10px;"
+					loading="lazy">
+				</iframe>
+			</div>
 			<div class="sermon-info">
-				<h3>${sermon.title}</h3>
-				<p><i class="fas fa-user"></i> ${sermon.pastor} | <i class="fas fa-calendar"></i> ${date}</p>
-				${sermon.scripture ? `<p><i class="fas fa-book"></i> ${sermon.scripture}</p>` : ''}
-				${sermon.description ? `<p>${sermon.description}</p>` : ''}
+				<h3>${title}</h3>
+				<p style="color: var(--accent-gold); margin: 0.5rem 0;">
+					<i class="fas fa-user"></i> ${pastor} | <i class="fas fa-calendar"></i> ${date}
+				</p>
+				${scripture ? `<p style="color: var(--text-light); margin: 0.5rem 0;"><i class="fas fa-book"></i> ${scripture}</p>` : ''}
+				${description ? `<p style="margin-top: 1rem;">${description}</p>` : ''}
+				<a href="pages/sermons.html" class="btn" style="margin-top: 1rem;">VIEW ALL SERMONS</a>
+			</div>
+		`;
+	} else {
+		// No video URL - show placeholder with info
+		sermonCard.innerHTML = `
+			<img src="assets/images/placeholder.png" alt="${title}" loading="lazy" style="width: 100%; height: 400px; object-fit: cover; border-radius: 10px;">
+			<div class="sermon-info">
+				<h3>${title}</h3>
+				<p style="color: var(--accent-gold); margin: 0.5rem 0;">
+					<i class="fas fa-user"></i> ${pastor} | <i class="fas fa-calendar"></i> ${date}
+				</p>
+				${scripture ? `<p style="color: var(--text-light); margin: 0.5rem 0;"><i class="fas fa-book"></i> ${scripture}</p>` : ''}
+				${description ? `<p style="margin-top: 1rem;">${description}</p>` : ''}
+				<a href="pages/sermons.html" class="btn" style="margin-top: 1rem;">VIEW ALL SERMONS</a>
 			</div>
 		`;
 	}
+	
+	console.log('Displayed sermon:', title);
 }
 
 // Helper to extract YouTube embed URL from JSON data
@@ -768,15 +804,20 @@ async function loadGalleryPage() {
 			// Clear loading message
 			galleryContainer.innerHTML = '';
 			
-			// Add photos from Supabase (NO DUPLICATES - just show all photos)
+			// Add photos from Supabase
 			result.data.forEach((photo, index) => {
 				const galleryItem = document.createElement('div');
 				galleryItem.className = 'gallery-item';
 				galleryItem.style.animationDelay = `${index * 0.05}s`;
+				galleryItem.setAttribute('data-index', index);
 				galleryItem.innerHTML = `
 					<img src="${photo.image_url}" alt="${photo.caption || 'Church Photo'}" loading="lazy">
 					${photo.caption ? `<div class="photo-caption">${photo.caption}</div>` : ''}
 				`;
+				
+				// Add click event to open lightbox
+				galleryItem.addEventListener('click', () => openLightbox(index, result.data));
+				
 				galleryContainer.appendChild(galleryItem);
 			});
 			
@@ -792,7 +833,7 @@ async function loadGalleryPage() {
 	}
 }
 
-// Load Gallery Preview on Home Page (4 most recent photos - NO DUPLICATES)
+// Load Gallery Preview on Home Page (4 most recent photos)
 async function loadHomeGalleryPreview() {
 	const galleryContainer = document.querySelector('#homeGalleryPreview');
 	if (!galleryContainer) {
@@ -808,7 +849,7 @@ async function loadHomeGalleryPreview() {
 			// Clear existing placeholder
 			galleryContainer.innerHTML = '';
 			
-			// Get first 4 photos (most recent) - NO DUPLICATES
+			// Get first 4 photos (most recent)
 			const photosToShow = Math.min(4, result.data.length);
 			const photos = result.data.slice(0, photosToShow);
 			
@@ -816,14 +857,19 @@ async function loadHomeGalleryPreview() {
 			photos.forEach((photo, index) => {
 				const galleryItem = document.createElement('div');
 				galleryItem.className = `gallery-item animate-delay-${index + 1}`;
+				galleryItem.setAttribute('data-index', index);
 				galleryItem.innerHTML = `
 					<img src="${photo.image_url}" alt="${photo.caption || 'Church Photo'}" loading="lazy">
 					${photo.caption ? `<div class="photo-caption">${photo.caption}</div>` : ''}
 				`;
+				
+				// Add click event to open lightbox
+				galleryItem.addEventListener('click', () => openLightbox(index, result.data));
+				
 				galleryContainer.appendChild(galleryItem);
 			});
 			
-			console.log(`Loaded ${photos.length} preview photos on home page (no duplicates)`);
+			console.log(`Loaded ${photos.length} preview photos on home page`);
 		} else {
 			// No photos - show message
 			galleryContainer.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #666; padding: 20px;">No photos available yet.</div>';
@@ -842,3 +888,202 @@ function extractYouTubeId(url) {
 	const match = url.match(regExp);
 	return (match && match[2].length === 11) ? match[2] : null;
 }
+
+// ============================================
+// LIGHTBOX FUNCTIONALITY
+// ============================================
+
+let lightboxData = {
+	photos: [],
+	currentIndex: 0,
+	overlay: null
+};
+
+// Create lightbox overlay element
+function createLightboxOverlay() {
+	const overlay = document.createElement('div');
+	overlay.className = 'lightbox-overlay';
+	overlay.innerHTML = `
+		<div class="lightbox-container">
+			<div class="lightbox-loading"></div>
+			<img class="lightbox-image" src="" alt="" style="display: none;">
+			<div class="lightbox-caption"></div>
+			<button class="lightbox-close" aria-label="Close lightbox">
+				<i class="fas fa-times"></i>
+			</button>
+			<button class="lightbox-nav lightbox-prev" aria-label="Previous image">
+				<i class="fas fa-chevron-left"></i>
+			</button>
+			<button class="lightbox-nav lightbox-next" aria-label="Next image">
+				<i class="fas fa-chevron-right"></i>
+			</button>
+			<div class="lightbox-counter"></div>
+		</div>
+	`;
+	
+	document.body.appendChild(overlay);
+	return overlay;
+}
+
+// Open lightbox
+function openLightbox(index, photos) {
+	// Store data
+	lightboxData.photos = photos;
+	lightboxData.currentIndex = index;
+	
+	// Create or get overlay
+	if (!lightboxData.overlay) {
+		lightboxData.overlay = createLightboxOverlay();
+		setupLightboxEvents();
+	}
+	
+	// Show overlay
+	lightboxData.overlay.classList.add('active');
+	document.body.style.overflow = 'hidden';
+	
+	// Load image
+	showLightboxImage(index);
+}
+
+// Close lightbox
+function closeLightbox() {
+	if (lightboxData.overlay) {
+		lightboxData.overlay.classList.remove('active');
+		document.body.style.overflow = '';
+	}
+}
+
+// Show image in lightbox
+function showLightboxImage(index) {
+	if (!lightboxData.overlay || !lightboxData.photos.length) return;
+	
+	const photo = lightboxData.photos[index];
+	const img = lightboxData.overlay.querySelector('.lightbox-image');
+	const caption = lightboxData.overlay.querySelector('.lightbox-caption');
+	const counter = lightboxData.overlay.querySelector('.lightbox-counter');
+	const loading = lightboxData.overlay.querySelector('.lightbox-loading');
+	const prevBtn = lightboxData.overlay.querySelector('.lightbox-prev');
+	const nextBtn = lightboxData.overlay.querySelector('.lightbox-next');
+	
+	// Show loading
+	loading.style.display = 'block';
+	img.style.display = 'none';
+	
+	// Update counter
+	counter.textContent = `${index + 1} / ${lightboxData.photos.length}`;
+	
+	// Update caption
+	if (photo.caption) {
+		caption.textContent = photo.caption;
+		caption.style.display = 'block';
+	} else {
+		caption.style.display = 'none';
+	}
+	
+	// Load image
+	const tempImg = new Image();
+	tempImg.onload = () => {
+		img.src = photo.image_url;
+		img.alt = photo.caption || 'Church Photo';
+		loading.style.display = 'none';
+		img.style.display = 'block';
+	};
+	tempImg.onerror = () => {
+		loading.style.display = 'none';
+		caption.textContent = 'Error loading image';
+		caption.style.display = 'block';
+	};
+	tempImg.src = photo.image_url;
+	
+	// Update navigation buttons
+	prevBtn.style.display = lightboxData.photos.length > 1 ? 'flex' : 'none';
+	nextBtn.style.display = lightboxData.photos.length > 1 ? 'flex' : 'none';
+}
+
+// Navigate to previous image
+function showPreviousImage() {
+	lightboxData.currentIndex = (lightboxData.currentIndex - 1 + lightboxData.photos.length) % lightboxData.photos.length;
+	showLightboxImage(lightboxData.currentIndex);
+}
+
+// Navigate to next image
+function showNextImage() {
+	lightboxData.currentIndex = (lightboxData.currentIndex + 1) % lightboxData.photos.length;
+	showLightboxImage(lightboxData.currentIndex);
+}
+
+// Setup lightbox event listeners
+function setupLightboxEvents() {
+	if (!lightboxData.overlay) return;
+	
+	const closeBtn = lightboxData.overlay.querySelector('.lightbox-close');
+	const prevBtn = lightboxData.overlay.querySelector('.lightbox-prev');
+	const nextBtn = lightboxData.overlay.querySelector('.lightbox-next');
+	
+	// Close button
+	closeBtn.addEventListener('click', closeLightbox);
+	
+	// Navigation buttons
+	prevBtn.addEventListener('click', (e) => {
+		e.stopPropagation();
+		showPreviousImage();
+	});
+	
+	nextBtn.addEventListener('click', (e) => {
+		e.stopPropagation();
+		showNextImage();
+	});
+	
+	// Click overlay to close
+	lightboxData.overlay.addEventListener('click', (e) => {
+		if (e.target === lightboxData.overlay) {
+			closeLightbox();
+		}
+	});
+	
+	// Keyboard navigation
+	document.addEventListener('keydown', (e) => {
+		if (!lightboxData.overlay.classList.contains('active')) return;
+		
+		switch(e.key) {
+			case 'Escape':
+				closeLightbox();
+				break;
+			case 'ArrowLeft':
+				showPreviousImage();
+				break;
+			case 'ArrowRight':
+				showNextImage();
+				break;
+		}
+	});
+	
+	// Touch swipe support
+	let touchStartX = 0;
+	let touchEndX = 0;
+	
+	lightboxData.overlay.addEventListener('touchstart', (e) => {
+		touchStartX = e.changedTouches[0].screenX;
+	}, { passive: true });
+	
+	lightboxData.overlay.addEventListener('touchend', (e) => {
+		touchEndX = e.changedTouches[0].screenX;
+		handleSwipe();
+	}, { passive: true });
+	
+	function handleSwipe() {
+		const swipeThreshold = 50;
+		const diff = touchStartX - touchEndX;
+		
+		if (Math.abs(diff) > swipeThreshold) {
+			if (diff > 0) {
+				// Swipe left - show next
+				showNextImage();
+			} else {
+				// Swipe right - show previous
+				showPreviousImage();
+			}
+		}
+	}
+}
+

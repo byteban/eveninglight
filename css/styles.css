@@ -1442,35 +1442,38 @@ section h2::after {
 /* Full Gallery Page - Responsive Grid */
 .gallery-grid.full-gallery {
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-	gap: 1.5rem;
-	max-width: 1200px;
+	grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+	gap: 2rem;
+	max-width: 1400px;
 	margin: 0 auto 3rem;
+	padding: 0 1rem;
 }
 
 /* Home Page Gallery - 4 Column Grid on Desktop */
 .gallery-grid.home-gallery {
 	display: grid;
-	grid-template-columns: repeat(4, 1fr);
-	gap: 1.5rem;
-	max-width: 1200px;
+	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+	gap: 2rem;
+	max-width: 1400px;
 	margin: 0 auto 3rem;
+	padding: 0 1rem;
 }
 
 /* Gallery Items */
 .gallery-item {
 	position: relative;
-	border-radius: 8px;
+	border-radius: 12px;
 	overflow: hidden;
-	box-shadow: var(--shadow-sm);
-	transition: all 0.4s ease;
+	box-shadow: var(--shadow-md);
+	transition: all 0.3s ease;
 	cursor: pointer;
 	width: 100%;
-	aspect-ratio: 1;
+	aspect-ratio: 4/3;
+	background: var(--bg-light);
 }
 
 .gallery-item:hover {
-	transform: translateY(-8px) scale(1.02);
+	transform: translateY(-5px);
 	box-shadow: var(--shadow-lg);
 }
 
@@ -1481,14 +1484,34 @@ section h2::after {
 	left: 0;
 	width: 100%;
 	height: 100%;
-	background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.7) 100%);
+	background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.6) 100%);
 	opacity: 0;
 	transition: opacity 0.3s ease;
 	z-index: 1;
+	pointer-events: none;
 }
 
 .gallery-item:hover::before {
 	opacity: 1;
+}
+
+.gallery-item::after {
+	content: '\f002';
+	font-family: 'Font Awesome 6 Free';
+	font-weight: 900;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%) scale(0);
+	font-size: 2.5rem;
+	color: white;
+	z-index: 2;
+	transition: transform 0.3s ease;
+	pointer-events: none;
+}
+
+.gallery-item:hover::after {
+	transform: translate(-50%, -50%) scale(1);
 }
 
 .gallery-item img {
@@ -1496,11 +1519,11 @@ section h2::after {
 	height: 100%;
 	object-fit: cover;
 	display: block;
-	transition: transform 0.4s ease;
+	transition: transform 0.3s ease;
 }
 
 .gallery-item:hover img {
-	transform: scale(1.1);
+	transform: scale(1.05);
 }
 
 .photo-caption {
@@ -1510,21 +1533,174 @@ section h2::after {
 	right: 0;
 	background: linear-gradient(to top, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.5));
 	color: white;
-	padding: 12px;
-	font-size: 13px;
+	padding: 15px;
+	font-size: 14px;
 	z-index: 2;
+	transform: translateY(100%);
+	transition: transform 0.3s ease;
+}
+
+.gallery-item:hover .photo-caption {
+	transform: translateY(0);
 }
 
 .gallery-preview .btn {
 	display: block;
-	margin: 0 auto;
+	margin: 2rem auto 0;
 	max-width: 300px;
 }
 
-.gallery-preview .btn {
-	display: block;
-	margin: 0 auto;
-	max-width: 300px;
+/* ============================================
+   LIGHTBOX/MODAL STYLES
+   ============================================ */
+
+.lightbox-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.95);
+	z-index: 10000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	opacity: 0;
+	visibility: hidden;
+	transition: opacity 0.3s ease, visibility 0.3s ease;
+	padding: 20px;
+}
+
+.lightbox-overlay.active {
+	opacity: 1;
+	visibility: visible;
+}
+
+.lightbox-container {
+	position: relative;
+	max-width: 90vw;
+	max-height: 90vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transform: scale(0.9);
+	transition: transform 0.3s ease;
+}
+
+.lightbox-overlay.active .lightbox-container {
+	transform: scale(1);
+}
+
+.lightbox-image {
+	max-width: 100%;
+	max-height: 85vh;
+	width: auto;
+	height: auto;
+	object-fit: contain;
+	border-radius: 8px;
+	box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.lightbox-caption {
+	position: absolute;
+	bottom: -50px;
+	left: 0;
+	right: 0;
+	text-align: center;
+	color: white;
+	font-size: 16px;
+	padding: 10px 20px;
+	background: rgba(0, 0, 0, 0.7);
+	border-radius: 8px;
+}
+
+.lightbox-close {
+	position: absolute;
+	top: -50px;
+	right: 0;
+	background: var(--accent-gold);
+	color: var(--primary-dark);
+	border: none;
+	width: 45px;
+	height: 45px;
+	border-radius: 50%;
+	font-size: 24px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.3s ease;
+	z-index: 10001;
+}
+
+.lightbox-close:hover {
+	background: white;
+	transform: rotate(90deg);
+}
+
+.lightbox-nav {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	background: var(--accent-gold);
+	color: var(--primary-dark);
+	border: none;
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+	font-size: 20px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.3s ease;
+	z-index: 10001;
+}
+
+.lightbox-nav:hover {
+	background: white;
+	transform: translateY(-50%) scale(1.1);
+}
+
+.lightbox-nav:active {
+	transform: translateY(-50%) scale(0.95);
+}
+
+.lightbox-nav.lightbox-prev {
+	left: -70px;
+}
+
+.lightbox-nav.lightbox-next {
+	right: -70px;
+}
+
+.lightbox-counter {
+	position: absolute;
+	top: -50px;
+	left: 0;
+	color: white;
+	font-size: 16px;
+	background: rgba(0, 0, 0, 0.7);
+	padding: 10px 20px;
+	border-radius: 8px;
+}
+
+/* Loading spinner for lightbox */
+.lightbox-loading {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 50px;
+	height: 50px;
+	border: 4px solid rgba(255, 255, 255, 0.3);
+	border-top-color: var(--accent-gold);
+	border-radius: 50%;
+	animation: lightboxSpin 0.8s linear infinite;
+}
+
+@keyframes lightboxSpin {
+	to { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
 /* About Section */
@@ -1803,13 +1979,24 @@ footer {
 	
 	/* Gallery - Tablet */
 	.gallery-grid.full-gallery {
-		grid-template-columns: repeat(3, 1fr);
-		gap: 1.2rem;
+		grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+		gap: 1.5rem;
+		padding: 0 1rem;
 	}
 	
 	.gallery-grid.home-gallery {
-		grid-template-columns: repeat(2, 1fr);
-		gap: 1.2rem;
+		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+		gap: 1.5rem;
+		padding: 0 1rem;
+	}
+	
+	/* Lightbox tablet adjustments */
+	.lightbox-nav.lightbox-prev {
+		left: -60px;
+	}
+	
+	.lightbox-nav.lightbox-next {
+		right: -60px;
 	}
 }
 
@@ -1837,6 +2024,7 @@ footer {
 	.gallery-grid.full-gallery {
 		grid-template-columns: repeat(2, 1fr);
 		gap: 1rem;
+		padding: 0 0.5rem;
 	}
 	
 	/* Home Page Gallery - Horizontal Scroll on Mobile */
@@ -1864,6 +2052,51 @@ footer {
 		width: 75%;
 		min-width: 250px;
 		scroll-snap-align: center;
+	}
+	
+	/* Lightbox Mobile Adjustments */
+	.lightbox-container {
+		max-width: 95vw;
+		max-height: 95vh;
+	}
+	
+	.lightbox-image {
+		max-height: 80vh;
+	}
+	
+	.lightbox-close {
+		top: 10px;
+		right: 10px;
+		width: 40px;
+		height: 40px;
+		font-size: 20px;
+	}
+	
+	.lightbox-nav {
+		width: 45px;
+		height: 45px;
+		font-size: 18px;
+	}
+	
+	.lightbox-nav.lightbox-prev {
+		left: 10px;
+	}
+	
+	.lightbox-nav.lightbox-next {
+		right: 10px;
+	}
+	
+	.lightbox-counter {
+		top: 10px;
+		left: 10px;
+		font-size: 14px;
+		padding: 8px 15px;
+	}
+	
+	.lightbox-caption {
+		bottom: 10px;
+		font-size: 14px;
+		padding: 8px 15px;
 	}
 	
 	/* Add swipe indicator for home gallery */
@@ -1982,6 +2215,7 @@ footer {
 	.gallery-grid.full-gallery {
 		grid-template-columns: 1fr;
 		gap: 1rem;
+		padding: 0 0.5rem;
 	}
 	
 	/* Home Page Gallery - Larger cards on small screens */
@@ -1995,6 +2229,29 @@ footer {
 		gap: 0.8rem;
 		padding: 0 0.5rem;
 		margin: 0 -0.5rem 2rem;
+	}
+	
+	/* Extra small lightbox adjustments */
+	.lightbox-nav {
+		width: 40px;
+		height: 40px;
+		font-size: 16px;
+	}
+	
+	.lightbox-close {
+		width: 35px;
+		height: 35px;
+		font-size: 18px;
+	}
+	
+	.lightbox-counter {
+		font-size: 12px;
+		padding: 6px 12px;
+	}
+	
+	.lightbox-caption {
+		font-size: 13px;
+		padding: 6px 12px;
 	}
 	
 	footer {
